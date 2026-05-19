@@ -4,6 +4,7 @@ import Articles from '../views/Articles.vue'
 import ArticleDetail from '../views/ArticleDetail.vue'
 import Archive from '../views/Archive.vue'
 import About from '../views/About.vue'
+import Tools from '../views/Tools.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
+  },
+  {
+    path: '/tools',
+    name: 'Tools',
+    component: Tools
   }
 ]
 

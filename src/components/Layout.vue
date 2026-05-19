@@ -75,6 +75,7 @@ const menuItems = [
   { key: '/', label: '首页' },
   { key: '/articles', label: '文章' },
   { key: '/archive', label: '归档' },
+  { key: '/tools', label: '小工具' },
   { key: '/about', label: '关于我' }
 ]
 
