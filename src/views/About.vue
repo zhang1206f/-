@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="about" ref="aboutRef">
     <div class="profile-header">
       <a-avatar :size="110" class="profile-avatar">风</a-avatar>
       <h1>清风</h1>
@@ -31,7 +31,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" ref="skillsRef">
       <h2>📌 技术栈</h2>
       <div class="skills-grid">
         <div class="skill-item" v-for="skill in skills" :key="skill.name">
@@ -47,7 +47,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" ref="timelineRef">
       <h2>📖 技术成长时间线</h2>
       <a-timeline>
         <a-timeline-item v-for="(item, idx) in timeline" :key="idx" :color="item.color">
@@ -60,7 +60,7 @@
       </a-timeline>
     </section>
 
-    <section class="section">
+    <section class="section" ref="projectsRef">
       <h2>🛠 个人项目</h2>
       <div class="projects-grid">
         <a-card
@@ -81,8 +81,65 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const aboutRef = ref(null)
+const skillsRef = ref(null)
+const timelineRef = ref(null)
+const projectsRef = ref(null)
+let ctx = null
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    gsap.from(aboutRef.value?.querySelector('.profile-header'), {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      ease: 'power3.out'
+    })
+    gsap.from(aboutRef.value?.querySelector('.profile-grid'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.6,
+      delay: 0.2,
+      ease: 'power3.out'
+    })
+    gsap.from(skillsRef.value?.querySelectorAll('.skill-item'), {
+      scrollTrigger: { trigger: skillsRef.value, start: 'top 85%' },
+      opacity: 0,
+      x: -20,
+      stagger: 0.08,
+      duration: 0.5,
+      ease: 'power2.out'
+    })
+    gsap.from(timelineRef.value?.querySelectorAll('.ant-timeline-item'), {
+      scrollTrigger: { trigger: timelineRef.value, start: 'top 85%' },
+      opacity: 0,
+      x: -20,
+      stagger: 0.12,
+      duration: 0.5,
+      ease: 'power2.out'
+    })
+    gsap.from(projectsRef.value?.querySelectorAll('.project-card'), {
+      scrollTrigger: { trigger: projectsRef.value, start: 'top 85%' },
+      opacity: 0,
+      y: 20,
+      stagger: 0.1,
+      duration: 0.5,
+      ease: 'power2.out'
+    })
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
+
 const skills = [
-  { name: 'Vue 3', level: 92, color: '#4fc08d', label: '熟练' },
   { name: 'JavaScript', level: 88, color: '#f7df1e', label: '熟练' },
   { name: 'TypeScript', level: 78, color: '#3178c6', label: '进阶' },
   { name: 'Vite', level: 82, color: '#646cff', label: '进阶' },

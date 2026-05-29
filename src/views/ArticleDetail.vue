@@ -1,5 +1,5 @@
 <template>
-  <div class="article-detail" v-if="article">
+  <div class="article-detail" v-if="article" ref="detailRef">
     <div class="toolbar">
       <a-button class="back-btn" type="link" @click="goBack">
         ← 返回文章列表
@@ -62,9 +62,56 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import gsap from 'gsap'
 import articles from '../mock/articles'
+
+const detailRef = ref(null)
+let ctx = null
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    gsap.from(detailRef.value?.querySelector('.toolbar'), {
+      opacity: 0,
+      y: -10,
+      duration: 0.4,
+      ease: 'power2.out'
+    })
+    gsap.from(detailRef.value?.querySelector('.article-header'), {
+      opacity: 0,
+      y: 30,
+      duration: 0.7,
+      ease: 'power3.out'
+    })
+    gsap.from(detailRef.value?.querySelector('.content'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.6,
+      delay: 0.2,
+      ease: 'power2.out'
+    })
+    gsap.from(detailRef.value?.querySelector('.recommendation'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.5,
+      delay: 0.4,
+      ease: 'power2.out'
+    })
+    gsap.from(detailRef.value?.querySelectorAll('.related-card'), {
+      opacity: 0,
+      y: 20,
+      stagger: 0.1,
+      duration: 0.5,
+      delay: 0.5,
+      ease: 'power2.out'
+    })
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 
 const route = useRoute()
 const router = useRouter()

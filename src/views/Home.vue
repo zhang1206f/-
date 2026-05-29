@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <section class="hero-wrap">
+    <section class="hero-wrap" ref="heroRef">
       <div class="hero-bg">
         <div class="hero-shape shape-1"></div>
         <div class="hero-shape shape-2"></div>
@@ -54,7 +54,7 @@
       </div>
     </section>
 
-    <section class="section section-highlights">
+    <section class="section section-highlights" ref="highlightsRef">
       <div class="section-inner">
         <div class="highlights-grid">
           <div class="highlight-card" v-for="item in highlights" :key="item.title">
@@ -66,7 +66,7 @@
       </div>
     </section>
 
-    <section class="section section-featured">
+    <section class="section section-featured" ref="featuredRef">
       <div class="section-inner">
         <div class="sec-header">
           <h2>⭐ 精选文章</h2>
@@ -97,7 +97,7 @@
       </div>
     </section>
 
-    <section class="section section-latest">
+    <section class="section section-latest" ref="postsRef">
       <div class="section-inner">
         <div class="sec-header">
           <h2>📝 最新文章</h2>
@@ -127,7 +127,7 @@
       </div>
     </section>
 
-    <section class="section section-archive">
+    <section class="section section-archive" ref="timelineRef">
       <div class="section-inner">
         <div class="sec-header">
           <h2>📚 归档时间线</h2>
@@ -155,7 +155,7 @@
       </div>
     </section>
 
-    <section class="section section-tags">
+    <section class="section section-tags" ref="tagsRef">
       <div class="section-inner">
         <div class="sec-header">
           <h2>🏷️ 标签云</h2>
@@ -175,7 +175,7 @@
       </div>
     </section>
 
-    <section class="section section-popular">
+    <section class="section section-popular" ref="popularRef">
       <div class="section-inner">
         <div class="sec-header">
           <h2>🔥 热门文章</h2>
@@ -198,7 +198,7 @@
       </div>
     </section>
 
-    <section class="section section-connect">
+    <section class="section section-connect" ref="connectRef">
       <div class="section-inner">
         <div class="connect-card">
           <h2>💬 保持联系</h2>
@@ -227,10 +227,24 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { MailOutlined, GithubOutlined, TwitterOutlined } from '@ant-design/icons-vue'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import articles from '../mock/articles'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const heroRef = ref(null)
+const highlightsRef = ref(null)
+const featuredRef = ref(null)
+const postsRef = ref(null)
+const timelineRef = ref(null)
+const tagsRef = ref(null)
+const popularRef = ref(null)
+const connectRef = ref(null)
+let ctx = null
 
 const router = useRouter()
 
@@ -337,6 +351,75 @@ const goArticles = () => {
 const goAbout = () => {
   router.push('/about')
 }
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    tl.from(heroRef.value?.querySelector('.hero-copy'), { opacity: 0, y: 40, duration: 0.8 })
+      .from(heroRef.value?.querySelector('.hero-summary-card'), { opacity: 0, x: 30, duration: 0.7 }, '-=0.5')
+      .from(heroRef.value?.querySelectorAll('.hero-metric'), { opacity: 0, y: 20, stagger: 0.1, duration: 0.5 }, '-=0.3')
+      .from(heroRef.value?.querySelectorAll('.hero-tag'), { opacity: 0, scale: 0.8, stagger: 0.05, duration: 0.3 }, '-=0.2')
+
+    gsap.from(highlightsRef.value?.querySelectorAll('.highlight-card'), {
+      scrollTrigger: { trigger: highlightsRef.value, start: 'top 88%' },
+      opacity: 0,
+      y: 30,
+      stagger: 0.1,
+      duration: 0.6
+    })
+
+    gsap.from(featuredRef.value?.querySelector('.featured-card'), {
+      scrollTrigger: { trigger: featuredRef.value, start: 'top 88%' },
+      opacity: 0,
+      y: 40,
+      duration: 0.7
+    })
+
+    gsap.from(postsRef.value?.querySelectorAll('.post-card'), {
+      scrollTrigger: { trigger: postsRef.value, start: 'top 85%' },
+      opacity: 0,
+      y: 30,
+      stagger: 0.1,
+      duration: 0.6
+    })
+
+    gsap.from(timelineRef.value?.querySelectorAll('.tl-group'), {
+      scrollTrigger: { trigger: timelineRef.value, start: 'top 85%' },
+      opacity: 0,
+      y: 20,
+      stagger: 0.15,
+      duration: 0.5
+    })
+
+    gsap.from(tagsRef.value?.querySelectorAll('.cloud-tag'), {
+      scrollTrigger: { trigger: tagsRef.value, start: 'top 88%' },
+      opacity: 0,
+      scale: 0.8,
+      stagger: 0.04,
+      duration: 0.3
+    })
+
+    gsap.from(popularRef.value?.querySelectorAll('.popular-card'), {
+      scrollTrigger: { trigger: popularRef.value, start: 'top 85%' },
+      opacity: 0,
+      y: 20,
+      stagger: 0.1,
+      duration: 0.5
+    })
+
+    gsap.from(connectRef.value?.querySelector('.connect-card'), {
+      scrollTrigger: { trigger: connectRef.value, start: 'top 88%' },
+      opacity: 0,
+      y: 30,
+      duration: 0.7
+    })
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 </script>
 
 <style scoped>

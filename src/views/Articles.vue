@@ -1,5 +1,5 @@
 <template>
-  <div class="articles-page">
+  <div class="articles-page" ref="pageRef">
     <div class="page-head">
       <div>
         <h1>全部文章</h1>
@@ -62,9 +62,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import gsap from 'gsap'
 import articles from '../mock/articles'
+
+const pageRef = ref(null)
+let ctx = null
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    gsap.from(pageRef.value?.querySelector('.page-head'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.6,
+      ease: 'power3.out'
+    })
+    gsap.from(pageRef.value?.querySelector('.filters'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.5,
+      delay: 0.2,
+      ease: 'power3.out'
+    })
+    gsap.from(pageRef.value?.querySelectorAll('.article-card'), {
+      opacity: 0,
+      y: 30,
+      stagger: 0.08,
+      duration: 0.6,
+      delay: 0.3,
+      ease: 'power3.out'
+    })
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 
 const route = useRoute()
 const router = useRouter()

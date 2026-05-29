@@ -1,5 +1,5 @@
 <template>
-  <div class="archive">
+  <div class="archive" ref="archiveRef">
     <div class="archive-hero">
       <div>
         <h1>📚 文章归档</h1>
@@ -46,9 +46,41 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import gsap from 'gsap'
 import articles from '../mock/articles'
+
+const archiveRef = ref(null)
+let ctx = null
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    gsap.from(archiveRef.value?.querySelector('.archive-hero'), {
+      opacity: 0,
+      y: 20,
+      duration: 0.6,
+      ease: 'power3.out'
+    })
+    gsap.from(archiveRef.value?.querySelectorAll('.year-pill'), {
+      opacity: 0,
+      scale: 0.8,
+      stagger: 0.06,
+      duration: 0.3
+    })
+    gsap.from(archiveRef.value?.querySelectorAll('.archive-group'), {
+      opacity: 0,
+      y: 20,
+      stagger: 0.15,
+      duration: 0.5,
+      ease: 'power2.out'
+    })
+  })
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 
 const router = useRouter()
 
