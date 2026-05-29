@@ -1,259 +1,312 @@
 <template>
-  <a-layout class="layout">
-    <a-layout-header class="header">
-      <router-link to="/" class="logo">清风博客</router-link>
-      <div class="nav-container">
-        <a-menu
-          v-model:selectedKeys="current"
-          mode="horizontal"
-          theme="dark"
-          :items="menuItems"
-          @click="handleMenuClick"
-          class="nav-menu"
-        />
-      </div>
+  <div class="layout-root">
+    <nav class="nav" :class="{ 'nav-scrolled': scrolled }">
+      <div class="nav-inner">
+        <router-link to="/" class="nav-logo">清风</router-link>
 
-      <div class="header-right">
-        <a-button type="text" shape="circle" class="icon-btn" @click="handleSearch">
-          <template #icon><SearchOutlined /></template>
-        </a-button>
-        <a-button type="primary" class="action-btn" @click="goArticles">最新文章</a-button>
-      </div>
-    </a-layout-header>
+        <div class="nav-links" :class="{ open: mobileOpen }">
+          <router-link
+            v-for="item in menuItems"
+            :key="item.path"
+            :to="item.path"
+            class="nav-link"
+            :class="{ active: isActive(item.path) }"
+            @click="mobileOpen = false"
+          >
+            {{ item.label }}
+          </router-link>
+        </div>
 
-    <a-layout-content class="content">
+        <div class="nav-actions">
+          <button class="theme-btn" @click="toggleTheme" :title="isDark ? '切换亮色模式' : '切换暗色模式'">
+            <svg v-if="isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+
+          <button class="hamburger" @click="mobileOpen = !mobileOpen" :class="{ open: mobileOpen }">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main">
       <router-view />
-    </a-layout-content>
+    </main>
 
-    <a-layout-footer class="footer">
+    <footer class="footer">
       <div class="footer-inner">
-        <div class="footer-col">
-          <h4>清风博客</h4>
-          <p class="footer-bio">这是一个专注于前端实战、性能优化、工具链与 Vue 生态的技术博客。</p>
-        </div>
-        <div class="footer-col">
-          <h4>快速导航</h4>
-          <router-link to="/">首页</router-link>
-          <router-link to="/articles">文章</router-link>
-          <router-link to="/archive">归档</router-link>
-          <router-link to="/about">关于我</router-link>
-        </div>
-        <div class="footer-col">
-          <h4>联系我</h4>
-          <a href="https://github.com" target="_blank">GitHub</a>
-          <a href="https://twitter.com" target="_blank">Twitter / X</a>
-          <a href="mailto:hello@qingfeng.me">Email</a>
-        </div>
+        <p>&copy; 2026 清风博客</p>
+        <span class="footer-dot">·</span>
+        <p>Built with Vue 3 + Vite</p>
+        <span class="footer-dot">·</span>
+        <p>前端实战笔记</p>
       </div>
-      <div class="footer-bottom">
-        <span>© 2026 清风博客</span>
-        <span class="sep">·</span>
-        <span>Built with Vue 3 + Vite</span>
-      </div>
-    </a-layout-footer>
-  </a-layout>
+    </footer>
+  </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { SearchOutlined } from '@ant-design/icons-vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useTheme } from '../composables/useTheme'
 
-const router = useRouter()
 const route = useRoute()
+const { isDark, toggleTheme } = useTheme()
+const mobileOpen = ref(false)
+const scrolled = ref(false)
 
-const current = ref([route.path])
+let scrollHandler = null
 
-watch(
-  () => route.path,
-  (path) => {
-    current.value = [path]
+onMounted(() => {
+  scrollHandler = () => {
+    scrolled.value = window.scrollY > 20
   }
-)
+  window.addEventListener('scroll', scrollHandler, { passive: true })
+})
+
+onUnmounted(() => {
+  if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
+})
 
 const menuItems = [
-  { key: '/', label: '首页' },
-  { key: '/articles', label: '文章' },
-  { key: '/archive', label: '归档' },
-  { key: '/tools', label: '小工具' },
-  { key: '/about', label: '关于我' }
+  { path: '/', label: '首页' },
+  { path: '/articles', label: '文章' },
+  { path: '/archive', label: '归档' },
+  { path: '/tools', label: '小工具' },
+  { path: '/about', label: '关于' }
 ]
 
-const handleMenuClick = ({ key }) => {
-  router.push(key)
-}
-
-const handleSearch = () => {
-  router.push('/articles')
-}
-
-const goArticles = () => {
-  router.push('/articles')
+const isActive = (path) => {
+  if (path === '/') return route.path === '/'
+  return route.path.startsWith(path)
 }
 </script>
 
 <style scoped>
-.layout {
+.layout-root {
   min-height: 100vh;
-  background: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
-.header {
+.nav {
+  position: fixed;
+  top: 16px;
+  left: 24px;
+  right: 24px;
+  z-index: 1000;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease, background 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-scrolled {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-active);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 72px;
-  background: rgba(8, 15, 41, 0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  padding: 0 20px;
+  height: var(--nav-height);
 }
 
-.logo {
-  color: #fff;
-  font-size: 22px;
+.nav-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.04em;
-  text-decoration: none;
+  background: var(--accent-gradient-2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
 }
 
-.nav-container {
-  flex: 1;
-  margin: 0 24px;
-}
-
-.nav-menu {
-  width: 100%;
-  border-bottom: none;
-  background: transparent;
-}
-
-.nav-menu :deep(.ant-menu-item) {
-  font-size: 15px;
-  padding: 0 18px;
-}
-
-.nav-menu :deep(.ant-menu-item-selected) {
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-
-.header-right {
+.nav-links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
 }
 
-.icon-btn {
-  color: rgba(255, 255, 255, 0.72);
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.action-btn {
-  border-radius: 999px;
-  padding: 0 18px;
+.nav-link:hover {
+  color: var(--text-h);
+  background: var(--bg-alt);
 }
 
-.content {
-  padding: 100px 24px 40px;
+.nav-link.active {
+  color: var(--primary);
+  background: rgba(37,99,235,0.08);
+}
+
+.dark .nav-link.active {
+  background: rgba(59,130,246,0.1);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.theme-btn:hover {
+  color: var(--primary);
+  border-color: var(--border-active);
+  background: var(--bg-alt);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+.main {
+  flex: 1;
+  padding: calc(var(--nav-height) + 40px) 24px 40px;
   max-width: 1240px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
-  min-height: calc(100vh - 240px);
 }
 
 .footer {
-  background: rgba(8, 15, 41, 0.96);
-  padding: 56px 24px 24px;
-  color: rgba(255, 255, 255, 0.7);
+  padding: 32px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-alt);
+  transition: background 0.3s ease;
 }
 
 .footer-inner {
   max-width: 1240px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
-  gap: 36px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.footer-col h4 {
-  color: #fff;
-  font-size: 16px;
-  margin-bottom: 14px;
-}
-
-.footer-bio {
-  font-size: 14px;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.footer-col a,
-.footer-col router-link {
-  display: block;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
-  margin-bottom: 10px;
-  transition: color 0.2s;
-}
-
-.footer-col a:hover,
-.footer-col router-link:hover {
-  color: #fff;
-}
-
-.footer-bottom {
-  max-width: 1240px;
-  margin: 24px auto 0;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--text-secondary);
+}
+
+.footer-inner p {
+  margin: 0;
+}
+
+.footer-dot {
+  opacity: 0.3;
 }
 
 @media (max-width: 860px) {
-  .header {
-    padding: 0 18px;
-    height: auto;
-    flex-wrap: wrap;
-    gap: 12px;
+  .nav {
+    left: 16px;
+    right: 16px;
+    top: 12px;
   }
 
-  .nav-container {
-    margin: 0;
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 8px;
+    right: 8px;
+    flex-direction: column;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+    gap: 2px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-link {
     width: 100%;
+    padding: 12px 16px;
   }
 
-  .content {
-    padding-top: 120px;
+  .hamburger {
+    display: flex;
   }
 
-  .footer-inner {
-    grid-template-columns: 1fr;
-  }
-}
-
-.sep {
-  margin: 0 12px;
-}
-
-@media (max-width: 768px) {
-  .footer-inner {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-  .header {
-    padding: 0 16px;
-  }
-  .content {
-    padding: 80px 16px 24px;
+  .main {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 </style>

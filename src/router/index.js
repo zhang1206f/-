@@ -7,41 +7,20 @@ import About from '../views/About.vue'
 import Tools from '../views/Tools.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/articles',
-    name: 'Articles',
-    component: Articles
-  },
-  {
-    path: '/articles/:id',
-    name: 'ArticleDetail',
-    component: ArticleDetail
-  },
-  {
-    path: '/archive',
-    name: 'Archive',
-    component: Archive
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
-  },
-  {
-    path: '/tools',
-    name: 'Tools',
-    component: Tools
-  }
+  { path: '/', name: 'Home', component: Home },
+  { path: '/articles', name: 'Articles', component: Articles },
+  { path: '/articles/:id', name: 'ArticleDetail', component: ArticleDetail },
+  { path: '/archive', name: 'Archive', component: Archive },
+  { path: '/about', name: 'About', component: About },
+  { path: '/tools', name: 'Tools', component: Tools }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 export default router

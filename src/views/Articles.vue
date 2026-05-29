@@ -3,61 +3,58 @@
     <div class="page-head">
       <div>
         <h1>全部文章</h1>
-        <p class="page-desc">共 {{ filteredArticles.length }} 篇实战文章，覆盖 Vue、构建、性能与工程化。</p>
+        <p class="page-desc">共 {{ filteredArticles.length }} 篇实战文章</p>
       </div>
       <div v-if="activeTag" class="tag-clear">
-        <a-button type="link" @click="clearTag">清除标签筛选</a-button>
+        <button class="btn-text" @click="clearTag">清除筛选</button>
       </div>
     </div>
 
     <div class="filters">
       <div class="search-box">
-        <a-input-search
-          v-model:value="searchText"
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          v-model="searchText"
           placeholder="搜索文章标题、标签或关键字"
-          allow-clear
-          enter-button="搜索"
-          @search="onSearch"
+          class="search-input"
+          @input="onSearch"
         />
       </div>
       <div class="filter-tags">
-        <span class="tag-label">热门标签：</span>
-        <a-tag
+        <span class="filter-label">标签：</span>
+        <span
           v-for="tag in allTags"
           :key="tag"
-          :color="activeTag === tag ? tagColor(tag) : 'default'"
-          :class="{ 'tag-active': activeTag === tag }"
+          class="tag-pill tag-sm"
+          :class="[tagClass(tag), { 'tag-active': activeTag === tag }]"
           @click="toggleTag(tag)"
-        >{{ tag }}</a-tag>
+        >{{ tag }}</span>
       </div>
     </div>
 
     <div v-if="filteredArticles.length === 0" class="empty">
-      <a-empty description="没有找到匹配的文章" />
+      <p>没有找到匹配的文章</p>
     </div>
 
-    <a-row :gutter="[24, 24]" v-else>
-      <a-col :xs="24" :sm="12" :lg="8" v-for="article in sortedArticles" :key="article.id">
-        <div class="article-card" @click="goToArticle(article.id)">
-          <div class="card-cover" :style="{ background: article.coverColor }">
-            <span class="cover-icon">📄</span>
-            <span class="cover-time">{{ article.readingTime }} min</span>
+    <div class="articles-grid" v-else>
+      <div class="article-card glass" v-for="article in sortedArticles" :key="article.id" @click="goToArticle(article.id)">
+        <div class="card-cover" :style="{ background: article.coverColor }">
+          <span class="cover-time">{{ article.readingTime }} min</span>
+        </div>
+        <div class="card-body">
+          <h3>{{ article.title }}</h3>
+          <p class="card-summary">{{ article.summary }}</p>
+          <div class="card-meta">
+            <span>{{ formatDate(article.date) }}</span>
+            <span class="sep">·</span>
+            <span>{{ article.views }} 次阅读</span>
           </div>
-          <div class="card-body">
-            <h3 class="card-title">{{ article.title }}</h3>
-            <p class="card-summary">{{ article.summary }}</p>
-            <div class="card-meta">
-              <span>{{ formatDate(article.date) }}</span>
-              <span class="meta-sep">·</span>
-              <span>👁 {{ article.views }}</span>
-            </div>
-            <div class="card-tags">
-              <a-tag v-for="tag in article.tags" :key="tag" :color="tagColor(tag)">{{ tag }}</a-tag>
-            </div>
+          <div class="card-tags">
+            <span class="tag-pill tag-sm" v-for="tag in article.tags" :key="tag" :class="tagClass(tag)">{{ tag }}</span>
           </div>
         </div>
-      </a-col>
-    </a-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,33 +69,13 @@ let ctx = null
 
 onMounted(() => {
   ctx = gsap.context(() => {
-    gsap.from(pageRef.value?.querySelector('.page-head'), {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      ease: 'power3.out'
-    })
-    gsap.from(pageRef.value?.querySelector('.filters'), {
-      opacity: 0,
-      y: 20,
-      duration: 0.5,
-      delay: 0.2,
-      ease: 'power3.out'
-    })
-    gsap.from(pageRef.value?.querySelectorAll('.article-card'), {
-      opacity: 0,
-      y: 30,
-      stagger: 0.08,
-      duration: 0.6,
-      delay: 0.3,
-      ease: 'power3.out'
-    })
+    gsap.from(pageRef.value?.querySelector('.page-head'), { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' })
+    gsap.from(pageRef.value?.querySelector('.filters'), { opacity: 0, y: 20, duration: 0.5, delay: 0.15, ease: 'power3.out' })
+    gsap.from(pageRef.value?.querySelectorAll('.article-card'), { opacity: 0, y: 30, stagger: 0.06, duration: 0.5, delay: 0.25, ease: 'power3.out' })
   })
 })
 
-onUnmounted(() => {
-  ctx?.revert()
-})
+onUnmounted(() => { ctx?.revert() })
 
 const route = useRoute()
 const router = useRouter()
@@ -130,53 +107,29 @@ const sortedArticles = computed(() => {
   return [...filteredArticles.value].sort((a, b) => new Date(b.date) - new Date(a.date))
 })
 
-const tagPalette = {
-  Vue: 'blue',
-  前端: 'geekblue',
-  经验分享: 'cyan',
-  Vite: 'green',
-  构建工具: 'lime',
-  体验: 'orange',
-  'Ant Design Vue': 'purple',
-  'UI 组件': 'magenta',
-  CSS: 'pink',
-  Grid: 'volcano',
-  踩坑: 'red',
-  JavaScript: 'gold',
-  异步编程: 'yellow',
-  最佳实践: 'orange',
-  Router: 'geekblue',
-  性能优化: 'red',
-  Lighthouse: 'cyan'
+const tagClass = (tag) => {
+  const map = {
+    Vue: 'tag-vue', 前端: 'tag-frontend', 经验分享: 'tag-exp',
+    Vite: 'tag-vite', 构建工具: 'tag-build', 体验: 'tag-exp',
+    'Ant Design Vue': 'tag-antd', 'UI 组件': 'tag-ui', CSS: 'tag-css',
+    Grid: 'tag-css', 踩坑: 'tag-bug', JavaScript: 'tag-js',
+    异步编程: 'tag-js', 最佳实践: 'tag-best',
+    Router: 'tag-vue', 性能优化: 'tag-best', Lighthouse: 'tag-build'
+  }
+  return map[tag] || ''
 }
-
-const tagColor = (tag) => tagPalette[tag] || 'blue'
 
 const formatDate = (d) => {
   const date = new Date(d)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-    date.getDate()
-  ).padStart(2, '0')}`
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-const goToArticle = (id) => {
-  router.push(`/articles/${id}`)
-}
-
+const goToArticle = (id) => { router.push(`/articles/${id}`) }
 const onSearch = () => {}
-
-const clearTag = () => {
-  activeTag.value = ''
-  searchText.value = ''
-}
-
+const clearTag = () => { activeTag.value = ''; searchText.value = '' }
 const toggleTag = (tag) => {
-  if (activeTag.value === tag) {
-    clearTag()
-  } else {
-    activeTag.value = tag
-    searchText.value = tag
-  }
+  if (activeTag.value === tag) { clearTag() }
+  else { activeTag.value = tag; searchText.value = tag }
 }
 
 if (route.query.tag) {
@@ -186,9 +139,7 @@ if (route.query.tag) {
 </script>
 
 <style scoped>
-.articles-page {
-  padding: 24px 0;
-}
+.articles-page { padding: 24px 0; }
 
 .page-head {
   display: flex;
@@ -200,141 +151,147 @@ if (route.query.tag) {
 }
 
 .page-head h1 {
-  font-size: 32px;
+  font-size: 30px;
+  font-weight: 600;
   margin: 0;
 }
 
-.page-desc {
-  color: #64748b;
-  font-size: 15px;
-  margin-top: 8px;
-}
+.page-desc { color: var(--text-secondary); font-size: 15px; margin-top: 6px; }
 
-.tag-clear {
-  display: flex;
-  align-items: center;
-}
+.tag-clear { display: flex; align-items: center; }
 
 .filters {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .search-box {
+  position: relative;
   max-width: 420px;
 }
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-h);
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.search-input::placeholder { color: var(--text-secondary); }
 
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.tag-label {
-  color: #64748b;
-  font-size: 14px;
+.filter-label { color: var(--text-secondary); font-size: 14px; }
+
+.tag-active {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.tag-active .ant-tag {
-  font-weight: 700;
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
 .article-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background: rgba(255,255,255,0.96);
-  border-radius: 24px;
-  overflow: hidden;
-  border: 1px solid rgba(148,163,184,0.18);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  transition: transform 0.25s, box-shadow 0.25s;
 }
 
 .article-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-glow);
 }
 
 .card-cover {
   position: relative;
-  min-height: 180px;
-  background: #eef2ff;
+  min-height: 170px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-}
-
-.cover-icon {
-  font-size: 34px;
-  z-index: 1;
 }
 
 .cover-time {
   position: absolute;
-  right: 16px;
-  bottom: 16px;
-  background: rgba(0,0,0,0.18);
+  right: 14px;
+  bottom: 14px;
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(4px);
   color: #fff;
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
 }
 
-.card-body {
-  padding: 22px 22px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.card-body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 12px; }
 
-.card-title {
+.card-body h3 {
   font-size: 18px;
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .card-summary {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
-  line-height: 1.75;
+  line-height: 1.7;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #94a3b8;
+  gap: 6px;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
-.meta-sep {
-  margin: 0 4px;
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.empty { text-align: center; padding: 80px 0; color: var(--text-secondary); }
+
+@media (max-width: 960px) {
+  .articles-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.empty {
-  padding: 80px 0;
-}
-
-@media (max-width: 768px) {
-  .article-card {
-    border-radius: 20px;
-  }
-
-  .filters {
-    gap: 12px;
-  }
+@media (max-width: 640px) {
+  .articles-grid { grid-template-columns: 1fr; }
 }
 </style>

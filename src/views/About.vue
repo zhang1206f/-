@@ -1,23 +1,28 @@
 <template>
   <div class="about" ref="aboutRef">
-    <div class="profile-header">
-      <a-avatar :size="110" class="profile-avatar">风</a-avatar>
+    <div class="profile-header glass">
+      <div class="avatar-wrap">
+        <div class="avatar-glow"></div>
+        <a-avatar :size="100" class="profile-avatar">风</a-avatar>
+      </div>
       <h1>清风</h1>
       <p class="profile-title">前端开发者 / Vue 技术写作者</p>
       <p class="profile-bio">
         我喜欢把复杂的前端问题拆成可复用的方案，用真实项目案例帮助你快速理解技术落地。
-        这不是一个仅仅分享概念的博客，而是一个专注于“实践 + 反思”的前端笔记本。
       </p>
       <div class="social-links">
-        <a-button shape="circle" href="https://github.com" target="_blank" class="social-btn">GH</a-button>
-        <a-button shape="circle" href="mailto:hello@qingfeng.me" class="social-btn">@</a-button>
-        <a-button shape="circle" href="https://twitter.com" target="_blank" class="social-btn">X</a-button>
+        <a class="social-btn" href="https://github.com" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a class="social-btn" href="mailto:hello@qingfeng.me">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
       </div>
     </div>
 
     <section class="section profile-grid">
-      <div class="profile-card">
-        <h2>我的写作方向</h2>
+      <div class="profile-card glass">
+        <h3>写作方向</h3>
         <ul>
           <li>Vue 3 & 组件化架构</li>
           <li>Vite 与现代前端工具链</li>
@@ -25,56 +30,55 @@
           <li>工程化、构建流程与前端架构</li>
         </ul>
       </div>
-      <div class="profile-card">
-        <h2>我的原则</h2>
+      <div class="profile-card glass">
+        <h3>我的原则</h3>
         <p>写博客时，我更看重「能不能直接用」和「有没有真实价值」。每篇文章都尽量带上代码示例、落地建议与复盘结论。</p>
       </div>
     </section>
 
     <section class="section" ref="skillsRef">
-      <h2>📌 技术栈</h2>
+      <h2>技术栈</h2>
       <div class="skills-grid">
-        <div class="skill-item" v-for="skill in skills" :key="skill.name">
-          <div class="skill-name">{{ skill.name }}</div>
-          <a-progress
-            :percent="skill.level"
-            :stroke-color="skill.color"
-            size="small"
-            :show-info="false"
-          />
-          <div class="skill-level">{{ skill.label }}</div>
+        <div class="skill-item glass" v-for="skill in skills" :key="skill.name">
+          <div class="skill-header">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-label">{{ skill.label }}</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-fill" :style="{ width: skill.level + '%', background: skill.color }"></div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section" ref="timelineRef">
-      <h2>📖 技术成长时间线</h2>
-      <a-timeline>
-        <a-timeline-item v-for="(item, idx) in timeline" :key="idx" :color="item.color">
-          <div class="tl-header">
-            <strong>{{ item.year }}</strong>
-            <span class="tl-tag">{{ item.role }}</span>
+      <h2>技术成长时间线</h2>
+      <div class="tl-list">
+        <div class="tl-entry" v-for="(item, idx) in timeline" :key="idx">
+          <div class="tl-line" :class="`line-${idx % 5}`">
+            <div class="tl-node"></div>
           </div>
-          <div class="tl-desc">{{ item.desc }}</div>
-        </a-timeline-item>
-      </a-timeline>
+          <div class="tl-content glass">
+            <div class="tl-header">
+              <strong>{{ item.year }}</strong>
+              <span class="tl-tag">{{ item.role }}</span>
+            </div>
+            <p>{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="section" ref="projectsRef">
-      <h2>🛠 个人项目</h2>
+      <h2>个人项目</h2>
       <div class="projects-grid">
-        <a-card
-          v-for="proj in projects"
-          :key="proj.name"
-          :title="proj.name"
-          :bordered="false"
-          class="project-card"
-        >
-          <p class="proj-desc">{{ proj.desc }}</p>
+        <div class="project-card glass" v-for="proj in projects" :key="proj.name">
+          <h3>{{ proj.name }}</h3>
+          <p>{{ proj.desc }}</p>
           <div class="proj-tags">
-            <a-tag v-for="t in proj.tags" :key="t" color="blue">{{ t }}</a-tag>
+            <span class="tag-pill tag-sm" v-for="t in proj.tags" :key="t">{{ t }}</span>
           </div>
-        </a-card>
+        </div>
       </div>
     </section>
   </div>
@@ -95,313 +99,271 @@ let ctx = null
 
 onMounted(() => {
   ctx = gsap.context(() => {
-    gsap.from(aboutRef.value?.querySelector('.profile-header'), {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-      ease: 'power3.out'
-    })
-    gsap.from(aboutRef.value?.querySelector('.profile-grid'), {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      delay: 0.2,
-      ease: 'power3.out'
-    })
+    gsap.from(aboutRef.value?.querySelector('.profile-header'), { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' })
+    gsap.from(aboutRef.value?.querySelector('.profile-grid'), { opacity: 0, y: 20, duration: 0.6, delay: 0.2, ease: 'power3.out' })
     gsap.from(skillsRef.value?.querySelectorAll('.skill-item'), {
       scrollTrigger: { trigger: skillsRef.value, start: 'top 85%' },
-      opacity: 0,
-      x: -20,
-      stagger: 0.08,
-      duration: 0.5,
-      ease: 'power2.out'
+      opacity: 0, x: -20, stagger: 0.08, duration: 0.5, ease: 'power2.out'
     })
-    gsap.from(timelineRef.value?.querySelectorAll('.ant-timeline-item'), {
+    gsap.from(timelineRef.value?.querySelectorAll('.tl-entry'), {
       scrollTrigger: { trigger: timelineRef.value, start: 'top 85%' },
-      opacity: 0,
-      x: -20,
-      stagger: 0.12,
-      duration: 0.5,
-      ease: 'power2.out'
+      opacity: 0, x: -20, stagger: 0.12, duration: 0.5, ease: 'power2.out'
     })
     gsap.from(projectsRef.value?.querySelectorAll('.project-card'), {
       scrollTrigger: { trigger: projectsRef.value, start: 'top 85%' },
-      opacity: 0,
-      y: 20,
-      stagger: 0.1,
-      duration: 0.5,
-      ease: 'power2.out'
+      opacity: 0, y: 20, stagger: 0.1, duration: 0.5, ease: 'power2.out'
     })
   })
 })
 
-onUnmounted(() => {
-  ctx?.revert()
-})
+onUnmounted(() => { ctx?.revert() })
 
 const skills = [
-  { name: 'JavaScript', level: 88, color: '#f7df1e', label: '熟练' },
-  { name: 'TypeScript', level: 78, color: '#3178c6', label: '进阶' },
+  { name: 'JavaScript', level: 88, color: '#eab308', label: '熟练' },
+  { name: 'TypeScript', level: 78, color: '#3b82f6', label: '进阶' },
   { name: 'Vite', level: 82, color: '#646cff', label: '进阶' },
-  { name: 'CSS / SCSS', level: 80, color: '#1572b6', label: '进阶' },
-  { name: 'Node.js', level: 70, color: '#339933', label: '掌握' },
-  { name: 'React', level: 60, color: '#61dafb', label: '掌握' },
-  { name: 'Python', level: 52, color: '#3776ab', label: '了解' }
+  { name: 'CSS / SCSS', level: 80, color: '#f97316', label: '进阶' },
+  { name: 'Node.js', level: 70, color: '#22c55e', label: '掌握' },
+  { name: 'React', level: 60, color: '#06b6d4', label: '掌握' },
+  { name: 'Python', level: 52, color: '#8b5cf6', label: '了解' }
 ]
 
 const timeline = [
-  { year: '2021', role: '初级前端', color: 'blue', desc: '毕业后加入创业公司，负责后台管理系统前端开发，使用 Vue 2 + Element UI，开始写技术博客，记录成长。' },
-  { year: '2022', role: '前端开发', color: 'green', desc: '加入中型公司，独立负责两个业务线前端，深入理解大型项目组件化和性能优化。' },
-  { year: '2023', role: '前端开发', color: 'orange', desc: '带领团队完成 Vue 2 到 Vue 3 的迁移，梳理公共组件库和开发规范。' },
-  { year: '2024', role: '高级前端', color: 'red', desc: '开始带新人和分享技术实践，关注工程化、CI/CD 与前端性能体系。' },
-  { year: '2025-2026', role: '前端技术负责人', color: 'purple', desc: '负责团队技术选型与架构规划，维持博客更新，持续输出实战总结。' }
+  { year: '2021', role: '初级前端', color: '#3b82f6', desc: '毕业后加入创业公司，负责后台管理系统前端开发，使用 Vue 2 + Element UI，开始写技术博客，记录成长。' },
+  { year: '2022', role: '前端开发', color: '#22c55e', desc: '加入中型公司，独立负责两个业务线前端，深入理解大型项目组件化和性能优化。' },
+  { year: '2023', role: '前端开发', color: '#eab308', desc: '带领团队完成 Vue 2 到 Vue 3 的迁移，梳理公共组件库和开发规范。' },
+  { year: '2024', role: '高级前端', color: '#f97316', desc: '开始带新人和分享技术实践，关注工程化、CI/CD 与前端性能体系。' },
+  { year: '2025-2026', role: '前端技术负责人', color: '#8b5cf6', desc: '负责团队技术选型与架构规划，维持博客更新，持续输出实战总结。' }
 ]
 
 const projects = [
   { name: 'Vue 组件库', desc: '内部组件库，基于 Ant Design Vue 封装，覆盖表格、表单、布局、弹窗等常用业务控件。', tags: ['Vue 3', '组件库', 'Ant Design'] },
   { name: 'CLI 工具', desc: '一个支持多种模板的命令行脚手架工具，能够快速生成项目结构和基础配置。', tags: ['Node.js', 'CLI'] },
-  { name: '个人博客', desc: '这个网站本身就是一个实践项目，使用 Vue 3 + Vite + Ant Design Vue 构建。', tags: ['Vue 3', 'Vite', '博客'] }
+  { name: '个人博客', desc: '这个网站本身就是一个实践项目，使用 Vue 3 + Vite 构建。', tags: ['Vue 3', 'Vite', '博客'] }
 ]
 </script>
 
 <style scoped>
-.about {
-  padding: 32px 0;
-  max-width: 1000px;
-  margin: 0 auto;
+.about { padding: 24px 0; max-width: 960px; margin: 0 auto; }
+
+.section { margin-bottom: 48px; }
+
+.section h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 24px;
 }
 
 .profile-header {
   text-align: center;
-  padding: 40px 28px;
-  border-radius: 32px;
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(148,163,184,0.16);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 40px;
+  padding: 44px 28px 36px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 36px;
+}
+
+.avatar-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+
+.avatar-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  opacity: 0.15;
+  filter: blur(20px);
 }
 
 .profile-avatar {
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  font-size: 40px;
-  box-shadow: 0 10px 30px rgba(79,70,229,0.2);
-  margin-bottom: 18px;
+  background: var(--accent-gradient) !important;
+  font-size: 36px !important;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
 }
 
 .profile-header h1 {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.profile-title {
-  color: #64748b;
-  font-size: 16px;
-  margin-bottom: 18px;
-}
+.profile-title { color: var(--text-secondary); font-size: 16px; margin-bottom: 16px; }
 
 .profile-bio {
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 15px;
-  line-height: 1.85;
-  max-width: 640px;
+  line-height: 1.8;
+  max-width: 560px;
   margin: 0 auto 24px;
 }
 
-.social-links {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-}
+.social-links { display: flex; gap: 12px; justify-content: center; }
 
 .social-btn {
-  border: none;
-  background: #eef2ff;
-  color: #334155;
-  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
 }
 
-.social-btn:hover {
-  background: #8b5cf6;
-  color: #fff;
-}
-
-.section {
-  margin-bottom: 48px;
-}
-
-.section h2 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
+.social-btn:hover { border-color: var(--primary); color: var(--primary); }
 
 .profile-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .profile-card {
-  padding: 26px 24px;
-  background: rgba(255,255,255,0.96);
-  border-radius: 24px;
-  border: 1px solid rgba(148,163,184,0.16);
-  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  border-radius: var(--radius);
 }
 
-.profile-card h2 {
-  margin-bottom: 16px;
-  font-size: 18px;
-}
+.profile-card h3 { font-size: 18px; margin-bottom: 14px; }
 
 .profile-card p,
 .profile-card li {
-  color: #475569;
+  color: var(--text-secondary);
   line-height: 1.8;
+  font-size: 14px;
 }
 
-.profile-card ul {
-  list-style: disc inside;
-  padding: 0;
-  margin: 0;
-}
+.profile-card ul { list-style: none; padding: 0; margin: 0; }
+.profile-card li { padding: 4px 0; }
+.profile-card li::before { content: '→ '; color: var(--primary); }
 
 .skills-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.skill-item {
-  padding: 22px;
-  background: rgba(255,255,255,0.94);
-  border-radius: 22px;
-  border: 1px solid rgba(148,163,184,0.16);
-}
-
-.skill-name {
-  font-weight: 700;
-  font-size: 15px;
-  margin-bottom: 10px;
-  color: #111827;
-}
-
-.skill-level {
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 10px;
-  text-align: right;
-}
-
-.tl-header strong {
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-.tl-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  background: rgba(99,102,241,0.12);
-  border-radius: 999px;
-  color: #4f46e5;
-  font-size: 13px;
-}
-
-.tl-desc {
-  color: #475569;
-  margin-top: 8px;
-  line-height: 1.75;
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.project-card {
-  border-radius: 22px;
-  overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.proj-desc {
-  color: #475569;
-  line-height: 1.75;
-  margin-bottom: 16px;
-}
-
-.proj-tags {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 950px) {
-  .profile-grid,
-  .projects-grid,
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.tl-tag {
-  display: inline-block;
-  font-size: 12px;
-  background: #f0f0f0;
-  color: #888;
-  padding: 1px 8px;
-  border-radius: 4px;
-}
-
-.tl-desc {
-  font-size: 14px;
-  color: #666;
-  line-height: 1.6;
-}
-
-/* Projects */
-.projects-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
+.skill-item { padding: 20px; border-radius: var(--radius); }
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.skill-name { font-weight: 600; font-size: 15px; color: var(--text-h); }
+.skill-label { font-size: 12px; color: var(--text-secondary); }
+
+.skill-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s ease;
+}
+
+.tl-list { position: relative; }
+
+.tl-entry {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.tl-line {
+  position: relative;
+  width: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.tl-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 3px solid var(--bg);
+  position: relative;
+  top: 24px;
+  flex-shrink: 0;
+}
+
+.line-0 .tl-node { background: #3b82f6; }
+.line-1 .tl-node { background: #22c55e; }
+.line-2 .tl-node { background: #eab308; }
+.line-3 .tl-node { background: #f97316; }
+.line-4 .tl-node { background: #8b5cf6; }
+
+.tl-content {
+  flex: 1;
+  padding: 20px 22px;
+  border-radius: var(--radius);
+}
+
+.tl-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tl-header strong { font-size: 17px; color: var(--text-h); }
+
+.tl-tag {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(37,99,235,0.1);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.tl-content p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
 .project-card {
-  border-radius: 10px;
-  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
-  border: 1px solid #f0f0f0;
+  padding: 24px;
+  border-radius: var(--radius);
+  transition: all 0.25s ease;
 }
 
 .project-card:hover {
-  border-color: #1890ff;
+  transform: translateY(-4px);
+  border-color: var(--border-active);
 }
 
-.proj-desc {
-  font-size: 13px;
-  color: #888;
-  line-height: 1.6;
-  margin-bottom: 12px;
+.project-card h3 { font-size: 17px; margin-bottom: 12px; }
+
+.project-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 16px;
 }
 
-.proj-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
+.proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-@media (max-width: 600px) {
+@media (max-width: 860px) {
+  .profile-grid,
   .skills-grid,
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
+  .projects-grid { grid-template-columns: 1fr; }
 }
 </style>

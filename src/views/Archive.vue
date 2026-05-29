@@ -1,42 +1,41 @@
 <template>
   <div class="archive" ref="archiveRef">
-    <div class="archive-hero">
+    <div class="archive-hero glass">
       <div>
-        <h1>📚 文章归档</h1>
-        <p class="page-desc">共 {{ articles.length }} 篇文章，按时间顺序分类整理，方便复盘与回顾。</p>
+        <h1>文章归档</h1>
+        <p class="page-desc">共 {{ articles.length }} 篇文章，按时间分类整理</p>
       </div>
       <div class="archive-stats">
-        <div><strong>{{ years.length }}</strong> 年份</div>
-        <div><strong>{{ articles.length }}</strong> 篇文章</div>
-        <div><strong>{{ tagCount }}</strong> 个标签</div>
+        <div class="stat-item"><strong>{{ years.length }}</strong> 年份</div>
+        <div class="stat-item"><strong>{{ articles.length }}</strong> 篇</div>
+        <div class="stat-item"><strong>{{ tagCount }}</strong> 标签</div>
       </div>
     </div>
 
-    <div class="year-pills">
-      <span v-for="year in years" :key="year" class="year-pill">{{ year }}</span>
-    </div>
-
-    <div v-for="group in groupedArticles" :key="group.month" class="archive-group">
-      <h2 class="group-title">{{ group.month }}</h2>
-      <div class="group-items">
-        <div
-          v-for="article in group.items"
-          :key="article.id"
-          class="archive-item"
-          @click="goToArticle(article.id)"
-        >
-          <div class="item-left">
-            <span class="item-date">{{ formatDay(article.date) }}</span>
-            <span class="item-dot"></span>
-          </div>
-          <div class="item-body">
-            <span class="item-title">{{ article.title }}</span>
-            <div class="item-meta">
-              <span>{{ article.readingTime }} 分钟</span>
-              <span class="meta-sep">·</span>
-              <span>{{ article.views }} 次阅读</span>
-              <span class="meta-sep">·</span>
-              <span class="item-tags">{{ article.tags.join(' / ') }}</span>
+    <div class="archive-groups">
+      <div v-for="group in groupedArticles" :key="group.month" class="archive-group">
+        <div class="group-year-deco">{{ group.month.split('年')[0] }}</div>
+        <h2 class="group-title">{{ group.month }}</h2>
+        <div class="group-items">
+          <div
+            v-for="article in group.items"
+            :key="article.id"
+            class="archive-item"
+            @click="goToArticle(article.id)"
+          >
+            <div class="item-left">
+              <span class="item-date">{{ formatDay(article.date) }}</span>
+              <span class="item-dot"></span>
+            </div>
+            <div class="item-body">
+              <span class="item-title">{{ article.title }}</span>
+              <div class="item-meta">
+                <span>{{ article.readingTime }} 分钟</span>
+                <span class="sep">·</span>
+                <span>{{ article.views }} 次阅读</span>
+                <span class="sep">·</span>
+                <span class="item-tags">{{ article.tags.join(' / ') }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -56,31 +55,12 @@ let ctx = null
 
 onMounted(() => {
   ctx = gsap.context(() => {
-    gsap.from(archiveRef.value?.querySelector('.archive-hero'), {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      ease: 'power3.out'
-    })
-    gsap.from(archiveRef.value?.querySelectorAll('.year-pill'), {
-      opacity: 0,
-      scale: 0.8,
-      stagger: 0.06,
-      duration: 0.3
-    })
-    gsap.from(archiveRef.value?.querySelectorAll('.archive-group'), {
-      opacity: 0,
-      y: 20,
-      stagger: 0.15,
-      duration: 0.5,
-      ease: 'power2.out'
-    })
+    gsap.from(archiveRef.value?.querySelector('.archive-hero'), { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' })
+    gsap.from(archiveRef.value?.querySelectorAll('.archive-group'), { opacity: 0, y: 20, stagger: 0.15, duration: 0.5, ease: 'power2.out' })
   })
 })
 
-onUnmounted(() => {
-  ctx?.revert()
-})
+onUnmounted(() => { ctx?.revert() })
 
 const router = useRouter()
 
@@ -113,19 +93,11 @@ const formatDay = (d) => {
   return `${String(date.getDate()).padStart(2, '0')}日`
 }
 
-const goToArticle = (id) => {
-  router.push(`/articles/${id}`)
-}
-
-const articlesCount = computed(() => articles.length)
+const goToArticle = (id) => { router.push(`/articles/${id}`) }
 </script>
 
 <style scoped>
-.archive {
-  padding: 24px 0;
-  max-width: 900px;
-  margin: 0 auto;
-}
+.archive { padding: 24px 0; max-width: 860px; margin: 0 auto; }
 
 .archive-hero {
   display: flex;
@@ -133,142 +105,128 @@ const articlesCount = computed(() => articles.length)
   gap: 24px;
   align-items: flex-start;
   padding: 28px 30px;
-  background: rgba(255,255,255,0.96);
-  border-radius: 28px;
-  border: 1px solid rgba(148,163,184,0.16);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 24px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 32px;
 }
 
 .archive-hero h1 {
-  font-size: 32px;
-  margin: 0 0 10px;
-}
-
-.page-desc {
-  color: #64748b;
-  margin: 0;
-  font-size: 15px;
-}
-
-.archive-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.archive-stats div {
-  padding: 18px 20px;
-  border-radius: 18px;
-  background: #eef2ff;
-  color: #334155;
+  font-size: 28px;
   font-weight: 600;
+  margin: 0 0 8px;
 }
 
-.year-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 28px;
+.page-desc { color: var(--text-secondary); margin: 0; font-size: 15px; }
+
+.archive-stats { display: flex; gap: 12px; }
+
+.stat-item {
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
-.year-pill {
-  background: rgba(99,102,241,0.12);
-  color: #4f46e5;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 14px;
+.stat-item strong {
+  display: block;
+  font-size: 20px;
+  color: var(--text-h);
+  font-weight: 700;
 }
 
-.archive-group {
-  margin-bottom: 28px;
+.archive-group { position: relative; margin-bottom: 36px; padding-left: 24px; }
+
+.group-year-deco {
+  position: absolute;
+  left: -4px;
+  top: -16px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--border);
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  letter-spacing: -0.04em;
 }
 
 .group-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
   color: var(--primary);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
 }
 
-.group-items {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.group-items { display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 1; }
 
 .archive-item {
   display: flex;
-  gap: 18px;
-  padding: 18px 22px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(148,163,184,0.16);
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
 }
 
 .archive-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--border-active);
+  transform: translateX(4px);
 }
 
 .item-left {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-width: 56px;
+  gap: 8px;
+  min-width: 48px;
 }
 
-.item-date {
-  font-size: 14px;
-  color: #64748b;
-}
+.item-date { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
 
 .item-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--primary);
 }
 
-.item-body {
-  flex: 1;
-  min-width: 0;
-}
+.item-body { flex: 1; min-width: 0; }
 
 .item-title {
   display: block;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-h);
+  margin-bottom: 6px;
 }
+
+.archive-item:hover .item-title { color: var(--primary); }
 
 .item-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-  color: #64748b;
+  gap: 6px;
+  color: var(--text-secondary);
   font-size: 13px;
+  align-items: center;
 }
 
-.meta-sep {
-  margin: 0 5px;
-}
-
-.item-tags {
-  color: #475569;
-}
+.item-tags { color: var(--text-secondary); }
 
 @media (max-width: 860px) {
-  .archive-hero {
-    flex-direction: column;
-  }
+  .archive-hero { flex-direction: column; }
+  .archive-stats { width: 100%; }
+  .stat-item { flex: 1; text-align: center; }
+  .group-year-deco { font-size: 56px; left: 0; }
+}
 
-  .archive-stats {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 640px) {
+  .archive-item { padding: 14px 16px; }
+  .group-year-deco { display: none; }
 }
 </style>
