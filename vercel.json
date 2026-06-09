@@ -37,15 +37,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "api/**/*.{js,ts}": {
-      "memory": 128,
-      "maxDuration": 10
-    }
-  },
-  "experimental": {
-    "turboMode": true,
-    "edgeRuntime": "edge"
-  }
+  ]
 }
