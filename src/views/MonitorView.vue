@@ -1,38 +1,63 @@
 <template>
-  <div class="monitor-page">
-    <header class="monitor-header">
-      <div class="monitor-title">
-        <span class="monitor-dot" />
-        <h1>系统监控</h1>
-        <span
-          v-if="connected"
-          class="monitor-badge"
-        >LIVE</span>
-        <span
-          v-else
-          class="monitor-badge disconnected"
-        >DISCONNECTED</span>
+  <div
+    ref="monitorRef"
+    class="page-shell page-stack monitor-page"
+  >
+    <section class="page-hero monitor-hero">
+      <div>
+        <span class="eyebrow">System Monitor</span>
+        <h1 class="section-title">
+          <span class="monitor-dot" />
+          系统监控
+          <span
+            v-if="connected"
+            class="monitor-badge"
+          >LIVE</span>
+          <span
+            v-else
+            class="monitor-badge disconnected"
+          >OFFLINE</span>
+        </h1>
+        <p class="section-subtitle">
+          运行 {{ formatUptime(data.uptime) }} · {{ clock }}
+        </p>
       </div>
-      <div class="monitor-header-right">
-        <span class="monitor-uptime">运行 {{ formatUptime(data.uptime) }}</span>
-        <span class="monitor-clock">{{ clock }}</span>
+      <div class="metric-grid monitor-stats">
+        <article class="metric-card">
+          <span class="metric-label">CPU</span>
+          <strong class="metric-value">{{ data.cpu }}%</strong>
+          <span
+            v-if="cpuTrend !== 0"
+            class="metric-note"
+            :class="cpuTrend > 0 ? 'trend-up' : 'trend-down'"
+          >{{ cpuTrend > 0 ? '↑' : '↓' }} {{ Math.abs(cpuTrend) }}%</span>
+          <span
+            v-else
+            class="metric-note"
+          >稳定</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">内存</span>
+          <strong class="metric-value">{{ data.memory.pct }}%</strong>
+          <span class="metric-note">{{ formatBytes(data.memory.used) }} / {{ formatBytes(data.memory.total) }} GB</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">磁盘</span>
+          <strong class="metric-value">{{ data.disk.pct }}%</strong>
+          <span class="metric-note">{{ formatBytes(data.disk.used) }} / {{ formatBytes(data.disk.size) }} GB</span>
+        </article>
       </div>
-    </header>
+    </section>
 
-    <div class="monitor-grid">
-      <!-- 4 指标卡片 -->
-      <div class="metric-card metric-cpu">
+    <!-- 环形指标 -->
+    <div class="monitor-rings">
+      <div class="ring-card glass-panel metric-cpu">
         <div
           class="metric-ring"
           :style="{ '--pct': data.cpu + '%' }"
         >
           <svg viewBox="0 0 120 120">
-            <circle
-              class="ring-bg"
-              cx="60"
-              cy="60"
-              r="54"
-            />
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
             <circle
               class="ring-fill"
               cx="60"
@@ -45,30 +70,16 @@
             {{ data.cpu }}<small>%</small>
           </div>
         </div>
-        <div class="metric-label">
-          CPU
-        </div>
-        <div
-          v-if="cpuTrend !== 0"
-          class="metric-trend"
-          :class="cpuTrend > 0 ? 'up' : 'down'"
-        >
-          {{ cpuTrend > 0 ? '↑' : '↓' }} {{ Math.abs(cpuTrend) }}%
-        </div>
+        <span class="ring-label">CPU</span>
       </div>
 
-      <div class="metric-card metric-mem">
+      <div class="ring-card glass-panel metric-mem">
         <div
           class="metric-ring"
           :style="{ '--pct': data.memory.pct + '%' }"
         >
           <svg viewBox="0 0 120 120">
-            <circle
-              class="ring-bg"
-              cx="60"
-              cy="60"
-              r="54"
-            />
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
             <circle
               class="ring-fill"
               cx="60"
@@ -81,26 +92,16 @@
             {{ formatBytes(data.memory.used) }}<small>GB</small>
           </div>
         </div>
-        <div class="metric-label">
-          内存
-        </div>
-        <div class="metric-sub">
-          {{ data.memory.pct }}% · {{ formatBytes(data.memory.total) }}GB
-        </div>
+        <span class="ring-label">内存</span>
       </div>
 
-      <div class="metric-card metric-disk">
+      <div class="ring-card glass-panel metric-disk">
         <div
           class="metric-ring"
           :style="{ '--pct': data.disk.pct + '%' }"
         >
           <svg viewBox="0 0 120 120">
-            <circle
-              class="ring-bg"
-              cx="60"
-              cy="60"
-              r="54"
-            />
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
             <circle
               class="ring-fill"
               cx="60"
@@ -113,41 +114,26 @@
             {{ formatBytes(data.disk.used) }}<small>GB</small>
           </div>
         </div>
-        <div class="metric-label">
-          磁盘
-        </div>
-        <div class="metric-sub">
-          {{ data.disk.pct }}% · {{ formatBytes(data.disk.size) }}GB
-        </div>
+        <span class="ring-label">磁盘</span>
       </div>
 
-      <div class="metric-card metric-net">
+      <div class="ring-card glass-panel metric-net">
         <div class="metric-ring no-anim">
           <svg viewBox="0 0 120 120">
-            <circle
-              class="ring-bg"
-              cx="60"
-              cy="60"
-              r="54"
-            />
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
           </svg>
           <div class="metric-ring-value net-value">
             <small class="net-up">↑{{ formatNet(data.net.tx_sec) }}</small>
             <small class="net-down">↓{{ formatNet(data.net.rx_sec) }}</small>
           </div>
         </div>
-        <div class="metric-label">
-          网络
-        </div>
-        <div class="metric-sub">
-          {{ data.net.iface || '—' }}
-        </div>
+        <span class="ring-label">网络</span>
       </div>
     </div>
 
     <div class="monitor-body">
       <!-- CPU & Memory 折线图 -->
-      <div class="panel panel-chart">
+      <div class="panel glass-panel panel-chart">
         <div class="panel-header">
           <h2>CPU & 内存</h2>
           <span class="panel-legend">
@@ -163,7 +149,7 @@
       </div>
 
       <!-- 进程列表 -->
-      <div class="panel panel-proc">
+      <div class="panel glass-panel panel-proc">
         <div class="panel-header">
           <h2>进程 TOP 8</h2>
         </div>
@@ -188,7 +174,7 @@
       </div>
 
       <!-- 网络流量面积图 -->
-      <div class="panel panel-net-chart">
+      <div class="panel glass-panel panel-net-chart">
         <div class="panel-header">
           <h2>网络吞吐量</h2>
           <span class="panel-legend">
@@ -204,7 +190,7 @@
       </div>
 
       <!-- 磁盘 IO -->
-      <div class="panel panel-io">
+      <div class="panel glass-panel panel-io">
         <div class="panel-header">
           <h2>磁盘 IO</h2>
         </div>
@@ -245,8 +231,11 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart, ScatterChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
+import { animateIn, useGsapContext } from '../composables/useMotion'
 
 use([CanvasRenderer, LineChart, ScatterChart, GridComponent, TooltipComponent, LegendComponent])
+
+const monitorRef = ref(null)
 
 const MAX_POINTS = 60
 
@@ -358,129 +347,381 @@ onUnmounted(() => {
   clearInterval(clockTimer)
   if (ws) { ws.onclose = null; ws.close() }
 })
+
+useGsapContext(() => {
+  animateIn(monitorRef.value?.querySelectorAll('.monitor-hero, .ring-card, .panel'), { stagger: 0.06 })
+})
 </script>
 
 <style scoped>
 .monitor-page {
-  background: #070b14;
-  border-radius: 0;
-  padding: 24px;
-  min-height: calc(100vh - 120px);
-  color: #e2e8f0;
-  font-family: 'JetBrains Mono', 'DM Sans', sans-serif;
+  gap: 20px;
 }
 
-.monitor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
+.monitor-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
 }
-.monitor-title { display: flex; align-items: center; gap: 12px; }
-.monitor-title h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; margin: 0; }
+
 .monitor-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: #22d3ee; box-shadow: 0 0 8px rgba(34,211,238,0.5);
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22d3ee;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+  margin-right: 8px;
+  vertical-align: middle;
 }
+
 .monitor-badge {
-  padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;
-  background: rgba(34,211,238,0.15); color: #22d3ee; border: 1px solid rgba(34,211,238,0.3);
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(34, 211, 238, 0.12);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  margin-left: 12px;
+  vertical-align: middle;
 }
-.monitor-badge.disconnected { background: rgba(248,113,113,0.15); color: #f87171; border-color: rgba(248,113,113,0.3); }
-.monitor-header-right { display: flex; align-items: center; gap: 20px; font-size: 13px; color: #94a3b8; }
-.monitor-uptime { }
-.monitor-clock { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: #e2e8f0; letter-spacing: 0.05em; }
 
-.monitor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+.monitor-badge.disconnected {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger, #f87171);
+  border-color: rgba(248, 113, 113, 0.3);
+}
 
-.metric-card {
-  background: rgba(15,23,42,0.6);
-  border: 1px solid rgba(148,163,184,0.1);
-  border-radius: 16px;
-  padding: 20px;
+.monitor-stats {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.trend-up {
+  color: #22d3ee;
+  font-weight: 600;
+}
+
+.trend-down {
+  color: var(--danger, #f87171);
+  font-weight: 600;
+}
+
+/* 环形指标 */
+.monitor-rings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.ring-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  backdrop-filter: blur(8px);
+  padding: 20px;
+  border-radius: 20px;
 }
-.metric-ring { position: relative; width: 100px; height: 100px; }
-.metric-ring svg { width: 100px; height: 100px; transform: rotate(-90deg); }
-.ring-bg { fill: none; stroke: rgba(148,163,184,0.08); stroke-width: 6; }
-.ring-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 339.292; stroke-dashoffset: 339.292; transition: stroke-dashoffset 0.5s ease; }
-.metric-cpu .ring-fill { stroke: #22d3ee; }
-.metric-mem .ring-fill { stroke: #a78bfa; }
-.metric-disk .ring-fill { stroke: #fbbf24; }
 
-.metric-ring-value { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #f1f5f9; }
-.metric-ring-value small { font-size: 11px; color: #94a3b8; font-weight: 500; }
-.net-value { gap: 2px; }
-.net-up { font-size: 11px; color: #fbbf24; font-weight: 600; }
-.net-down { font-size: 11px; color: #34d399; font-weight: 600; }
-.metric-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-.metric-sub { font-size: 11px; color: #6b7d95; }
-.metric-trend { font-size: 11px; font-weight: 600; }
-.metric-trend.up { color: #22d3ee; }
-.metric-trend.down { color: #f87171; }
+.metric-ring {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
 
-.monitor-body { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.metric-ring svg {
+  width: 100px;
+  height: 100px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 6;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 339.292;
+  stroke-dashoffset: 339.292;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.metric-cpu .ring-fill {
+  stroke: #22d3ee;
+}
+
+.metric-mem .ring-fill {
+  stroke: #a78bfa;
+}
+
+.metric-disk .ring-fill {
+  stroke: #fbbf24;
+}
+
+.metric-ring-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.metric-ring-value small {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.net-value {
+  gap: 2px;
+}
+
+.net-up {
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.net-down {
+  font-size: 11px;
+  color: #34d399;
+  font-weight: 600;
+}
+
+.ring-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 图表面板 */
+.monitor-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
 
 .panel {
-  background: rgba(15,23,42,0.5);
-  border: 1px solid rgba(148,163,184,0.1);
-  border-radius: 16px;
   padding: 18px;
-  backdrop-filter: blur(8px);
+  border-radius: 20px;
 }
-.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.panel-header h2 { font-size: 14px; font-weight: 600; color: #e2e8f0; margin: 0; }
-.panel-legend { display: flex; align-items: center; gap: 12px; font-size: 11px; color: #94a3b8; }
-.legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-.cpu-dot { background: #22d3ee; }
-.mem-dot { background: #a78bfa; }
-.tx-dot { background: #fbbf24; }
-.rx-dot { background: #34d399; }
 
-.chart-main { height: 200px; width: 100%; }
-
-.panel-chart { grid-column: 1 / 2; }
-.panel-proc { grid-column: 2 / 3; }
-
-.panel-net-chart { grid-column: 1 / 2; }
-.panel-io { grid-column: 2 / 3; }
-
-.io-box { display: flex; flex-direction: column; gap: 14px; padding: 8px 0; }
-.io-row { display: grid; grid-template-columns: 36px 1fr 60px; align-items: center; gap: 10px; }
-.io-label { font-size: 12px; color: #94a3b8; font-weight: 600; }
-.io-bar-track { height: 6px; border-radius: 4px; background: rgba(148,163,184,0.08); overflow: hidden; }
-.io-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-.io-read { background: linear-gradient(90deg, #22d3ee, #06b6d4); }
-.io-write { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
-.io-value { font-size: 12px; font-weight: 600; text-align: right; font-family: 'JetBrains Mono', monospace; }
-.io-read-val { color: #22d3ee; }
-.io-write-val { color: #a78bfa; }
-.io-note { margin-top: 8px; font-size: 11px; color: #6b7d95; text-align: center; }
-
-.proc-list { display: flex; flex-direction: column; gap: 6px; }
-.proc-row { display: grid; grid-template-columns: 20px 1fr 2fr 36px 36px; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; font-size: 11px; }
-.proc-row:nth-child(odd) { background: rgba(148,163,184,0.04); }
-.proc-rank { color: #6b7d95; font-weight: 600; }
-.proc-name { color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.proc-bar-track { height: 4px; background: rgba(148,163,184,0.08); border-radius: 4px; overflow: hidden; }
-.proc-bar-fill { height: 100%; background: linear-gradient(90deg, #22d3ee, #06b6d4); border-radius: 4px; transition: width 0.5s ease; }
-.proc-pct { color: #22d3ee; text-align: right; font-weight: 600; }
-.proc-mem { color: #a78bfa; text-align: right; }
-
-
-
-@media (max-width: 980px) {
-  .monitor-grid { grid-template-columns: repeat(2, 1fr); }
-  .monitor-body { grid-template-columns: 1fr; }
-  .panel-chart, .panel-proc, .panel-net-chart, .panel-io { grid-column: 1; }
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
+
+.panel-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+
+.panel-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.cpu-dot {
+  background: #22d3ee;
+}
+
+.mem-dot {
+  background: #a78bfa;
+}
+
+.tx-dot {
+  background: #fbbf24;
+}
+
+.rx-dot {
+  background: #34d399;
+}
+
+.chart-main {
+  height: 200px;
+  width: 100%;
+}
+
+/* 进程列表 */
+.proc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proc-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 2fr 36px 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.proc-row:nth-child(odd) {
+  background: var(--bg-muted);
+}
+
+.proc-rank {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.proc-name {
+  color: var(--text-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proc-bar-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.proc-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee, #06b6d4);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.proc-pct {
+  color: #22d3ee;
+  text-align: right;
+  font-weight: 600;
+}
+
+.proc-mem {
+  color: #a78bfa;
+  text-align: right;
+}
+
+/* 磁盘 IO */
+.io-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.io-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 60px;
+  align-items: center;
+  gap: 10px;
+}
+
+.io-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.io-bar-track {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.io-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.io-read {
+  background: linear-gradient(90deg, #22d3ee, #06b6d4);
+}
+
+.io-write {
+  background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+}
+
+.io-value {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.io-read-val {
+  color: #22d3ee;
+}
+
+.io-write-val {
+  color: #a78bfa;
+}
+
+.io-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-subtle, var(--text-muted));
+  text-align: center;
+}
+
+@media (max-width: 1080px) {
+  .monitor-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .monitor-rings {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .monitor-body {
+    grid-template-columns: 1fr;
+  }
+
+  .monitor-rings {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 640px) {
-  .monitor-grid { grid-template-columns: 1fr; }
-  .monitor-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .monitor-header-right { width: 100%; justify-content: space-between; }
+  .monitor-rings {
+    grid-template-columns: 1fr;
+  }
+
+  .monitor-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .proc-row {
+    grid-template-columns: 20px 1fr 1.5fr 36px 36px;
+  }
 }
 </style>

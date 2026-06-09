@@ -71,6 +71,84 @@
       </div>
     </section>
 
+    <!-- 数据统计面板 -->
+    <section class="stats-panel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ articles.length }}</span>
+            <span class="stat-label">篇文章</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalViews.toLocaleString() }}</span>
+            <span class="stat-label">次阅读</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ allTags.length }}</span>
+            <span class="stat-label">个标签</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ avgReadingTime }}分钟</span>
+            <span class="stat-label">平均阅读</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 热门标签云 -->
+    <section class="tag-cloud-section">
+      <div class="section-header">
+        <div>
+          <span class="eyebrow">Popular Tags</span>
+          <h2>热门标签</h2>
+        </div>
+        <button class="btn-link" @click="goArticles">
+          查看全部
+        </button>
+      </div>
+      <div class="tag-cloud">
+        <button
+          v-for="tag in popularTags"
+          :key="tag.name"
+          class="tag-item"
+          :class="[getTagClass(tag.name), { active: activeTag === tag.name }]"
+          @click="toggleTag(tag.name)"
+        >
+          {{ tag.name }}
+          <span class="tag-count">{{ tag.count }}</span>
+        </button>
+      </div>
+    </section>
+
     <!-- 精选文章 -->
     <section
       ref="featuredRef"
@@ -208,6 +286,46 @@ const heroRef = ref(null)
 const featuredRef = ref(null)
 const latestRef = ref(null)
 const ctaRef = ref(null)
+const activeTag = ref('')
+
+// 统计数据
+const totalViews = computed(() => {
+  return articles.reduce((sum, article) => sum + article.views, 0)
+})
+
+const allTags = computed(() => {
+  const set = new Set()
+  articles.forEach(article => article.tags.forEach(tag => set.add(tag)))
+  return [...set]
+})
+
+const avgReadingTime = computed(() => {
+  if (articles.length === 0) return 0
+  const total = articles.reduce((sum, article) => sum + article.readingTime, 0)
+  return Math.round(total / articles.length)
+})
+
+// 热门标签
+const popularTags = computed(() => {
+  const tagCounts = {}
+  articles.forEach(article => {
+    article.tags.forEach(tag => {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1
+    })
+  })
+  return Object.entries(tagCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8)
+})
+
+// 标签切换
+const toggleTag = (tag) => {
+  activeTag.value = activeTag.value === tag ? '' : tag
+  if (activeTag.value) {
+    router.push({ path: '/articles', query: { tag: activeTag.value } })
+  }
+}
 
 // 精选文章：按阅读量排序取前2篇
 const featuredArticles = computed(() =>
@@ -550,6 +668,129 @@ useGsapContext(() => {
   flex-wrap: wrap;
 }
 
+/* 数据统计面板 */
+.stats-panel {
+  padding: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--surface-strong);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.stat-icon-blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.stat-icon-green {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.stat-icon-purple {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.stat-icon-orange {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* 热门标签云 */
+.tag-cloud-section {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+  transform: translateY(-2px);
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.tag-item.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.tag-count {
+  font-size: 12px;
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.tag-item.active .tag-count {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 @media (max-width: 1080px) {
   .featured-grid {
     grid-template-columns: 1fr;
@@ -560,6 +801,12 @@ useGsapContext(() => {
   .hero-content {
     padding: 40px 16px;
     min-height: calc(100vh - 60px);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tag-cloud-section {
+    padding: 20px;
   }
 
   .latest-item {

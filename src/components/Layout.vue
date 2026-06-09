@@ -84,13 +84,6 @@
             </svg>
           </button>
 
-          <router-link
-            to="/articles"
-            class="btn-primary nav-cta"
-          >
-            开始阅读
-          </router-link>
-
           <button
             class="btn-ghost nav-burger"
             :aria-expanded="mobileOpen"
@@ -231,14 +224,19 @@ onUnmounted(() => {
 
 const onEnter = (el, done) => {
   if (prefersReducedMotion()) {
+    el.style.opacity = '1'
     done()
     return
   }
 
+  let called = false
+  const safeDone = () => { if (!called) { called = true; done() } }
+  const timer = setTimeout(safeDone, 800)
+
   gsap.fromTo(
     el,
     { opacity: 0, y: 28, filter: 'blur(8px)' },
-    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.56, ease: 'power2.out', onComplete: done }
+    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.56, ease: 'power2.out', onComplete: () => { clearTimeout(timer); safeDone() } }
   )
 }
 
@@ -248,13 +246,17 @@ const onLeave = (el, done) => {
     return
   }
 
+  let called = false
+  const safeDone = () => { if (!called) { called = true; done() } }
+  const timer = setTimeout(safeDone, 600)
+
   gsap.to(el, {
     opacity: 0,
     y: -18,
     filter: 'blur(8px)',
     duration: 0.28,
     ease: 'power2.in',
-    onComplete: done
+    onComplete: () => { clearTimeout(timer); safeDone() }
   })
 }
 </script>

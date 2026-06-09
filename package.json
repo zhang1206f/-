@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node server/monitor-server.cjs & vite",
+    "dev:client": "vite",
+    "dev:server": "node server/monitor-server.cjs",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
