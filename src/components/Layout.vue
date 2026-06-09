@@ -234,12 +234,12 @@ const onEnter = (el, done) => {
 
   let called = false
   const safeDone = () => { if (!called) { called = true; done() } }
-  const timer = setTimeout(safeDone, 800)
+  const timer = setTimeout(safeDone, 200)
 
   gsap.fromTo(
     el,
-    { opacity: 0, y: 28, filter: 'blur(8px)' },
-    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.56, ease: 'power2.out', onComplete: () => { clearTimeout(timer); safeDone(); ScrollTrigger.refresh() } }
+    { opacity: 0, y: 12 },
+    { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out', onComplete: () => { clearTimeout(timer); safeDone(); ScrollTrigger.refresh() } }
   )
 }
 
@@ -251,13 +251,11 @@ const onLeave = (el, done) => {
 
   let called = false
   const safeDone = () => { if (!called) { called = true; done() } }
-  const timer = setTimeout(safeDone, 600)
+  const timer = setTimeout(safeDone, 250)
 
   gsap.to(el, {
     opacity: 0,
-    y: -18,
-    filter: 'blur(8px)',
-    duration: 0.28,
+    duration: 0.12,
     ease: 'power2.in',
     onComplete: () => { clearTimeout(timer); safeDone() }
   })
