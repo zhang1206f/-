@@ -2,7 +2,6 @@
   /* ===== 设计系统令牌 ===== */
   --primary: #6d7cff;
   --primary-strong: #4f5eff;
-  --primary-main: #6d7cff;
   --primary-soft: rgba(109, 124, 255, 0.12);
   --secondary: #22c1c3;
   --secondary-soft: rgba(34, 193, 195, 0.12);
@@ -50,7 +49,6 @@
 .dark {
   --primary: #8ea2ff;
   --primary-strong: #c0cbff;
-  --primary-main: #8B98FF;
   --primary-soft: rgba(142, 162, 255, 0.18);
   --secondary: #4ce0d2;
   --secondary-soft: rgba(76, 224, 210, 0.14);
@@ -85,6 +83,9 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  body::before {
+    display: none;
   }
 }
 
@@ -558,42 +559,6 @@ p {
 
 .mono {
   font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-}
-
-.ant-input-number,
-.ant-input-number-affix-wrapper,
-.ant-input,
-.ant-select-selector {
-  border-radius: 14px !important;
-  border-color: var(--line) !important;
-  background: var(--surface-strong) !important;
-  box-shadow: none !important;
-}
-
-.ant-input-number:hover,
-.ant-input-number-focused,
-.ant-input-number-affix-wrapper:hover,
-.ant-input-number-affix-wrapper-focused,
-.ant-input:focus,
-.ant-input-focused {
-  border-color: var(--line-strong) !important;
-}
-
-.ant-input-number-input,
-.ant-input {
-  color: var(--text-heading) !important;
-}
-
-.ant-switch {
-  background: rgba(148, 163, 184, 0.34) !important;
-}
-
-.ant-switch.ant-switch-checked {
-  background: var(--gradient-brand) !important;
-}
-
-.ant-avatar {
-  box-shadow: 0 20px 50px rgba(109, 124, 255, 0.24);
 }
 
 @media (max-width: 1080px) {

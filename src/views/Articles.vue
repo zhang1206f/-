@@ -28,25 +28,22 @@
     <section class="section-card filters-panel">
       <div class="filters-head">
         <div class="input-shell filter-input">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="8"
-            />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
-          <input
-            v-model="searchText"
-            placeholder="搜索标题、摘要或标签"
+          <input v-model="searchText" placeholder="搜索标题、摘要或标签">
+          <button
+            v-if="searchText"
+            class="search-clear"
+            @click="searchText = ''"
+            aria-label="清除搜索"
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         <div class="filter-actions">
@@ -152,16 +149,24 @@ const allTags = computed(() => {
 })
 
 const filteredArticles = computed(() => {
-  const keyword = searchText.value.trim().toLowerCase()
-  if (!keyword) return articles
+  let result = articles
 
-  return articles.filter((item) => {
-    return (
+  // Tag filter
+  if (activeTag.value) {
+    result = result.filter((item) => item.tags.includes(activeTag.value))
+  }
+
+  // Keyword search
+  const keyword = searchText.value.trim().toLowerCase()
+  if (keyword) {
+    result = result.filter((item) =>
       item.title.toLowerCase().includes(keyword) ||
       item.summary.toLowerCase().includes(keyword) ||
       item.tags.some((tag) => tag.toLowerCase().includes(keyword))
     )
-  })
+  }
+
+  return result
 })
 
 const sortedArticles = computed(() =>
@@ -194,16 +199,8 @@ const toggleTag = (tag) => {
   }
 
   activeTag.value = tag
-  searchText.value = tag
   syncQuery(tag)
 }
-
-watch(searchText, (val) => {
-  if (activeTag.value && val !== activeTag.value) {
-    activeTag.value = ''
-    syncQuery('')
-  }
-})
 
 const goToArticle = (id) => router.push(`/articles/${id}`)
 
@@ -379,6 +376,26 @@ onUnmounted(() => {
   .filter-actions {
     justify-content: space-between;
   }
+}
+
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.search-clear:hover {
+  color: var(--text-heading);
+  background: var(--bg-muted);
 }
 
 @media (max-width: 640px) {

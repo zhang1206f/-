@@ -1,33 +1,27 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-/**
- * 从 Markdown 内容中提取标题列表，并通过 IntersectionObserver 追踪当前激活标题
- * @param {import('vue').Ref<string>|() => string} markdownContent - 文章 Markdown 内容
- * @param {object} options
- * @param {number[]} options.levels - 要提取的标题层级，默认 [2, 3]
- * @param {number} options.rootMargin - IntersectionObserver rootMargin（px）
- */
-export function useToc(markdownContent, options = {}) {
-  const { levels = [2, 3], rootMargin = -80 } = options
+export function useToc(htmlContent, options = {}) {
+  const { levels = [2, 3, 4, 5, 6], rootMargin = -80 } = options
 
   const activeId = ref('')
   let observer = null
 
   const headings = computed(() => {
-    const content = typeof markdownContent === 'function' ? markdownContent() : markdownContent.value
+    const content = typeof htmlContent === 'function' ? htmlContent() : htmlContent.value
     if (!content) return []
 
-    const regex = /^(#{2,3})\s+(.+)$/gm
     const result = []
-    let match
     let idx = 0
+    // Match rendered heading tags with toc- IDs
+    const regex = /<h([2-6]) id="([^"]*)">([\s\S]*?)<\/h\1>/g
+    let match
 
     while ((match = regex.exec(content)) !== null) {
-      const level = match[1].length
+      const level = parseInt(match[1])
       if (!levels.includes(level)) continue
 
-      const text = match[2].trim()
-      const id = `toc-${idx++}`
+      const id = match[2]
+      const text = match[3].replace(/<[^>]+>/g, '').trim() // strip any inner HTML tags
       result.push({ id, level, text })
     }
 

@@ -97,13 +97,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 回到顶部 -->
-    <button v-show="showBackTop" class="back-top-btn" @click="scrollToTop">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="18 15 12 9 6 15" />
-      </svg>
-    </button>
   </div>
 </template>
 
@@ -117,7 +110,6 @@ import { animateIn, attachHoverLift, revealOnScroll, useGsapContext } from '../c
 const archiveRef = ref(null)
 const router = useRouter()
 const activeYear = ref(null)
-const showBackTop = ref(false)
 const groupRefs = ref({})
 
 const groupedArticles = computed(() => {
@@ -154,13 +146,7 @@ const scrollToYear = (year) => {
   }
 }
 
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
 const handleScroll = () => {
-  showBackTop.value = window.scrollY > 500
-  
   // 更新当前可见的年份
   const scrollTop = window.scrollY + 200
   for (const year of years.value) {
@@ -411,31 +397,6 @@ useGsapContext(() => {
   color: var(--text-subtle);
 }
 
-/* 回到顶部按钮 */
-.back-top-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s;
-  z-index: 100;
-}
-
-.back-top-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-}
-
 @media (max-width: 1080px) {
   .archive-hero {
     grid-template-columns: 1fr;
@@ -481,13 +442,6 @@ useGsapContext(() => {
 
   .card-title {
     font-size: 16px;
-  }
-
-  .back-top-btn {
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
   }
 }
 </style>

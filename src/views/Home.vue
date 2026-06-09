@@ -277,7 +277,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import articles from '../mock/articles'
 import { formatShortDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
-import { animateIn, attachHoverLift, attachMagneticButtons, gsap, revealOnScroll, useGsapContext } from '../composables/useMotion'
+import { animateIn, attachHoverLift, attachMagneticButtons, gsap, useGsapContext } from '../composables/useMotion'
 
 const router = useRouter()
 
@@ -343,25 +343,55 @@ const goToArticle = (id) => router.push(`/articles/${id}`)
 
 let detachHover = () => {}
 let detachMagnet = () => {}
+let scrollObserver = null
+
+function scrollReveal(container, targets) {
+  if (!container || !targets || !targets.length) return
+  // Set initial hidden state
+  gsap.set(targets, { opacity: 0, y: 28 })
+
+  scrollObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          gsap.to(targets, {
+            opacity: 1,
+            y: 0,
+            duration: 0.72,
+            stagger: 0.08,
+            ease: 'power3.out'
+          })
+          scrollObserver.unobserve(entry.target)
+        }
+      })
+    },
+    { threshold: 0.1 }
+  )
+  scrollObserver.observe(container)
+}
 
 onMounted(() => {
   detachHover = attachHoverLift(pageRef.value?.querySelectorAll('.card-hover'))
   detachMagnet = attachMagneticButtons(heroRef.value?.querySelectorAll('.btn-primary, .btn-secondary'))
+
+  // Delay scroll animations slightly so route transition layout settles first
+  requestAnimationFrame(() => {
+    scrollReveal(featuredRef.value, featuredRef.value?.querySelectorAll('.featured-card'))
+    scrollReveal(latestRef.value, latestRef.value?.querySelectorAll('.latest-item'))
+    scrollReveal(ctaRef.value, [ctaRef.value])
+  })
 })
 
 onUnmounted(() => {
   detachHover()
   detachMagnet()
+  scrollObserver?.disconnect()
 })
 
 useGsapContext(() => {
   animateIn(heroRef.value?.querySelectorAll('.hero-chip, .hero-title, .hero-subtitle, .hero-actions, .hero-tags, .scroll-hint'), {
     stagger: 0.08
   })
-
-  revealOnScroll(featuredRef.value?.querySelectorAll('.featured-card'), { trigger: featuredRef.value })
-  revealOnScroll(latestRef.value?.querySelectorAll('.latest-item'), { trigger: latestRef.value })
-  revealOnScroll(ctaRef.value, { trigger: ctaRef.value })
 })
 </script>
 
@@ -515,8 +545,8 @@ useGsapContext(() => {
 }
 
 .latest-section {
-  line-height: 1px;
-  border-radius: 9px;
+  line-height: normal;
+  border-radius: var(--radius-lg);
 }
 
 .latest-list {
@@ -800,7 +830,7 @@ useGsapContext(() => {
 @media (max-width: 768px) {
   .hero-content {
     padding: 40px 16px;
-    min-height: calc(100vh - 60px);
+    min-height: auto;
   }
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -6,12 +6,7 @@
     <div class="profile-header glass">
       <div class="avatar-wrap">
         <div class="avatar-glow" />
-        <a-avatar
-          :size="100"
-          class="profile-avatar"
-        >
-          风
-        </a-avatar>
+        <div class="profile-avatar">风</div>
       </div>
       <h1>清风</h1>
       <p class="profile-title">
@@ -23,8 +18,9 @@
       <div class="social-links">
         <a
           class="social-btn"
-          href="https://github.com"
+          href="#"
           target="_blank"
+          title="GitHub"
         >
           <svg
             width="18"
@@ -103,11 +99,8 @@
           :key="idx"
           class="tl-entry"
         >
-          <div
-            class="tl-line"
-            :class="`line-${idx % 5}`"
-          >
-            <div class="tl-node" />
+          <div class="tl-line">
+            <div class="tl-node" :style="{ background: item.color }" />
           </div>
           <div class="tl-content glass">
             <div class="tl-header">
@@ -218,11 +211,18 @@ const projects = [
 }
 
 .profile-avatar {
-  background: var(--gradient-brand) !important;
-  font-size: 36px !important;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  font-size: 36px;
   font-weight: 700;
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
 
 .profile-header h1 {
@@ -340,12 +340,6 @@ const projects = [
   top: 24px;
   flex-shrink: 0;
 }
-
-.line-0 .tl-node { background: #3b82f6; }
-.line-1 .tl-node { background: #22c55e; }
-.line-2 .tl-node { background: #eab308; }
-.line-3 .tl-node { background: #f97316; }
-.line-4 .tl-node { background: #8b5cf6; }
 
 .tl-content {
   flex: 1;

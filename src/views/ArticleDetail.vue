@@ -25,7 +25,7 @@
     <section class="page-hero article-hero">
       <div
         class="article-hero__cover"
-        :style="{ background: getCoverGradient(article) }"
+        :style="{ background: article ? getCoverGradient(article) : '' }"
       />
       <div class="article-hero__body">
         <div class="list-inline">
@@ -105,7 +105,7 @@
 
       <article
         class="article-content glass-panel"
-        v-html="renderedContent"
+        v-html="articleHtml"
       />
     </section>
 
@@ -264,57 +264,37 @@ import articles from '../mock/articles'
 import { formatFullDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, revealOnScroll, useGsapContext } from '../composables/useMotion'
 import { useToc } from '../composables/useToc'
+import { useMarkdown } from '../composables/useMarkdown'
+
+const { renderMarkdown } = useMarkdown()
 
 const detailRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const tocOpen = ref(false)
 
-const article = articles.find((item) => item.id === Number(route.params.id))
-
-const { headings, activeId, scrollToHeading, initObserver, disconnectObserver } = useToc(
-  () => (article ? article.content : '')
-)
+const article = computed(() => articles.find((item) => item.id === Number(route.params.id)))
 
 const renderedContent = computed(() => {
-  if (!article) return ''
-
-  let html = article.content
-  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    const label = lang ? `<span class="code-lang">${lang}</span>` : ''
-    return `<div class="code-block"><div class="code-block-header">${label}</div><pre><code>${escapeHtml(code.trim())}</code></pre></div>`
-  })
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>')
-
-  // 为标题注入 TOC id（单次遍历保持文档顺序）
-  let idx = 0
-  html = html.replace(/^(#{1,3}) (.+)$/gm, (_, hashes, text) => {
-    const level = hashes.length
-    return `<h${level} id="toc-${idx++}">${text}</h${level}>`
-  })
-
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>')
-  html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
-  html = html.replace(/((?:<li>.*?<\/li>\n?)+)/g, '<ul>$1</ul>')
-  html = html.replace(/\n\n/g, '</p><p>')
-  html = `<p>${html}</p>`
-  html = html.replace(/<p><\/p>/g, '')
-  html = html.replace(/<p>\s*<\/p>/g, '')
-  html = html.replace(/<p>(<ul>)/g, '$1')
-  html = html.replace(/(<\/ul>)<\/p>/g, '$1')
-  return html
+  if (!article.value) return ''
+  return renderMarkdown(article.value.content)
 })
 
-function escapeHtml(text) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }
-  return text.replace(/[&<>"']/g, (char) => map[char])
-}
+const articleHtml = computed(() => {
+  if (!renderedContent.value) return ''
+  // Add copy button wrapper to each code block
+  return renderedContent.value.replace(
+    /<pre(.*?)>/g,
+    '<div class="code-block-wrapper"><button class="code-copy-btn">复制</button><pre$1>'
+  )
+})
+
+const { headings, activeId, scrollToHeading, initObserver, disconnectObserver } = useToc(renderedContent)
 
 const relatedArticles = computed(() => {
-  if (!article) return []
+  if (!article.value) return []
   return articles
-    .filter((item) => item.id !== article.id && item.tags.some((tag) => article.tags.includes(tag)))
+    .filter((item) => item.id !== article.value.id && item.tags.some((tag) => article.value.tags.includes(tag)))
     .slice(0, 3)
 })
 
@@ -323,8 +303,20 @@ const goToArticle = (id) => router.push(`/articles/${id}`)
 
 let detachHover = () => {}
 
+function handleCodeCopy(e) {
+  const btn = e.target.closest('.code-copy-btn')
+  if (!btn) return
+  const code = btn.nextElementSibling?.textContent
+  if (!code) return
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '已复制'
+    setTimeout(() => { btn.textContent = '复制' }, 1500)
+  })
+}
+
 onMounted(() => {
   detachHover = attachHoverLift(detailRef.value?.querySelectorAll('.card-hover'))
+  detailRef.value?.addEventListener('click', handleCodeCopy)
   // 等 DOM 渲染完成后初始化观察器
   requestAnimationFrame(() => initObserver())
 })
@@ -332,6 +324,7 @@ onMounted(() => {
 onUnmounted(() => {
   detachHover()
   disconnectObserver()
+  detailRef.value?.removeEventListener('click', handleCodeCopy)
 })
 
 useGsapContext(() => {
@@ -632,6 +625,28 @@ useGsapContext(() => {
   color: #dbe7ff;
   font-size: 13px;
   line-height: 1.8;
+}
+
+.code-block-wrapper {
+  position: relative;
+}
+.code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.code-copy-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .article-content :deep(ul) {

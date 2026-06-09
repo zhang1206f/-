@@ -101,17 +101,19 @@
         class="mobile-panel glass-panel"
         :class="{ open: mobileOpen }"
       >
-        <router-link
-          v-for="item in menuItems"
-          :key="`${item.path}-mobile`"
-          :to="item.path"
-          class="mobile-link"
-          :class="{ active: isActive(item.path) }"
-          @click="mobileOpen = false"
-        >
-          <span>{{ item.label }}</span>
-          <small>{{ item.desc }}</small>
-        </router-link>
+        <div class="mobile-panel-inner">
+          <router-link
+            v-for="item in menuItems"
+            :key="`${item.path}-mobile`"
+            :to="item.path"
+            class="mobile-link"
+            :class="{ active: isActive(item.path) }"
+            @click="mobileOpen = false"
+          >
+            <span>{{ item.label }}</span>
+            <small>{{ item.desc }}</small>
+          </router-link>
+        </div>
       </div>
     </header>
 
@@ -137,7 +139,7 @@
       class="site-footer"
     >
       <div class="site-footer__inner">
-        <span class="footer-copy">© 2026 清风博客</span>
+        <span class="footer-copy">© {{ currentYear }} 清风博客</span>
         <span class="footer-powered">Vue 3 · Vite · GSAP</span>
       </div>
     </footer>
@@ -168,12 +170,13 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { gsap, prefersReducedMotion } from '../composables/useMotion'
+import { gsap, ScrollTrigger, prefersReducedMotion } from '../composables/useMotion'
 import { useTheme } from '../composables/useTheme'
 
 const route = useRoute()
 const { isDark, toggleTheme } = useTheme()
 const mobileOpen = ref(false)
+const currentYear = new Date().getFullYear()
 
 const menuItems = [
   { path: '/', label: '首页', desc: '品牌首页与内容概览' },
@@ -236,7 +239,7 @@ const onEnter = (el, done) => {
   gsap.fromTo(
     el,
     { opacity: 0, y: 28, filter: 'blur(8px)' },
-    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.56, ease: 'power2.out', onComplete: () => { clearTimeout(timer); safeDone() } }
+    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.56, ease: 'power2.out', onComplete: () => { clearTimeout(timer); safeDone(); ScrollTrigger.refresh() } }
   )
 }
 
@@ -411,10 +414,6 @@ const onLeave = (el, done) => {
   padding: 0;
 }
 
-.nav-cta {
-  min-width: 112px;
-}
-
 .nav-burger {
   display: none;
   width: 46px;
@@ -429,11 +428,27 @@ const onLeave = (el, done) => {
 }
 
 .mobile-panel {
-  display: none;
   width: min(100%, var(--container));
   margin: 12px auto 0;
   padding: 10px;
   border-radius: 22px;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  transition: grid-template-rows 280ms ease, opacity 280ms ease;
+}
+
+.mobile-panel.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.mobile-panel-inner {
+  display: grid;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .mobile-link {
@@ -489,8 +504,7 @@ const onLeave = (el, done) => {
 .footer-powered { font-size: 12px; color: var(--text-subtle); font-family: 'JetBrains Mono', monospace; }
 
 @media (max-width: 980px) {
-  .site-nav,
-  .nav-cta {
+  .site-nav {
     display: none;
   }
 
@@ -500,8 +514,7 @@ const onLeave = (el, done) => {
     gap: 4px;
   }
 
-  .mobile-panel.open {
-    display: grid;
+  .mobile-panel-inner {
     gap: 6px;
   }
 

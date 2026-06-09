@@ -18,6 +18,8 @@
     "ant-design-vue": "^4.2.6",
     "echarts": "^6.1.0",
     "gsap": "^3.15.0",
+    "markdown-it": "^14.2.0",
+    "shiki": "^4.2.0",
     "vue": "^3.5.32",
     "vue-echarts": "^8.0.1",
     "vue-router": "^5.0.7"
