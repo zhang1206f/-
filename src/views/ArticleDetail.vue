@@ -1,21 +1,47 @@
 <template>
-  <div v-if="article" class="page-shell page-stack article-page" ref="detailRef">
-    <button class="btn-link article-back" @click="goBack">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5"></path>
-        <path d="m12 19-7-7 7-7"></path>
+  <div
+    v-if="article"
+    ref="detailRef"
+    class="page-shell page-stack article-page"
+  >
+    <button
+      class="btn-link article-back"
+      @click="goBack"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M19 12H5" />
+        <path d="m12 19-7-7 7-7" />
       </svg>
       返回文章列表
     </button>
 
     <section class="page-hero article-hero">
-      <div class="article-hero__cover" :style="{ background: getCoverGradient(article) }"></div>
+      <div
+        class="article-hero__cover"
+        :style="{ background: getCoverGradient(article) }"
+      />
       <div class="article-hero__body">
         <div class="list-inline">
-          <span class="tag-pill tag-sm" v-for="tag in article.tags" :key="tag" :class="getTagClass(tag)">{{ tag }}</span>
+          <span
+            v-for="tag in article.tags"
+            :key="tag"
+            class="tag-pill tag-sm"
+            :class="getTagClass(tag)"
+          >{{ tag }}</span>
         </div>
-        <h1 class="section-title article-title">{{ article.title }}</h1>
-        <p class="section-subtitle">{{ article.summary }}</p>
+        <h1 class="section-title article-title">
+          {{ article.title }}
+        </h1>
+        <p class="section-subtitle">
+          {{ article.summary }}
+        </p>
         <div class="meta-row">
           <span class="surface-badge">{{ formatFullDate(article.date) }}</span>
           <span class="surface-badge">{{ article.readingTime }} 分钟阅读</span>
@@ -26,26 +52,171 @@
 
     <section class="article-layout">
       <aside class="article-side glass-panel">
+        <div class="toc-panel">
+          <span class="side-label">目录导航</span>
+          <nav
+            v-if="headings.length"
+            class="toc-list"
+          >
+            <button
+              v-for="h in headings"
+              :key="h.id"
+              class="toc-item"
+              :class="[`toc-level-${h.level}`, { active: activeId === h.id }]"
+              @click="scrollToHeading(h.id)"
+            >
+              <span class="toc-dot" />
+              <span class="toc-text">{{ h.text }}</span>
+            </button>
+          </nav>
+          <p
+            v-else
+            class="toc-empty"
+          >
+            暂无目录
+          </p>
+        </div>
+
+        <div class="side-divider" />
+
         <div class="side-block">
           <span class="side-label">内容摘要</span>
           <p>{{ article.summary }}</p>
         </div>
-        <div class="side-block" v-if="article.recommendation">
+        <div
+          v-if="article.recommendation"
+          class="side-block"
+        >
           <span class="side-label">推荐理由</span>
           <p>{{ article.recommendation }}</p>
         </div>
         <div class="side-block">
           <span class="side-label">阅读标签</span>
           <div class="list-inline">
-            <span class="tag-pill tag-sm" v-for="tag in article.tags" :key="`${tag}-side`" :class="getTagClass(tag)">{{ tag }}</span>
+            <span
+              v-for="tag in article.tags"
+              :key="`${tag}-side`"
+              class="tag-pill tag-sm"
+              :class="getTagClass(tag)"
+            >{{ tag }}</span>
           </div>
         </div>
       </aside>
 
-      <article class="article-content glass-panel" v-html="renderedContent"></article>
+      <article
+        class="article-content glass-panel"
+        v-html="renderedContent"
+      />
     </section>
 
-    <section v-if="relatedArticles.length" class="section-card related-section">
+    <!-- 移动端浮动目录按钮 -->
+    <button
+      v-if="headings.length"
+      class="toc-fab"
+      :class="{ open: tocOpen }"
+      aria-label="文章目录"
+      @click="tocOpen = !tocOpen"
+    >
+      <svg
+        v-if="!tocOpen"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line
+          x1="8"
+          y1="6"
+          x2="21"
+          y2="6"
+        />
+        <line
+          x1="8"
+          y1="12"
+          x2="21"
+          y2="12"
+        />
+        <line
+          x1="8"
+          y1="18"
+          x2="21"
+          y2="18"
+        />
+        <line
+          x1="3"
+          y1="6"
+          x2="3.01"
+          y2="6"
+        />
+        <line
+          x1="3"
+          y1="12"
+          x2="3.01"
+          y2="12"
+        />
+        <line
+          x1="3"
+          y1="18"
+          x2="3.01"
+          y2="18"
+        />
+      </svg>
+      <svg
+        v-else
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line
+          x1="18"
+          y1="6"
+          x2="6"
+          y2="18"
+        />
+        <line
+          x1="6"
+          y1="6"
+          x2="18"
+          y2="18"
+        />
+      </svg>
+    </button>
+    <div
+      v-if="tocOpen"
+      class="toc-mobile-overlay"
+      @click="tocOpen = false"
+    >
+      <nav
+        class="toc-mobile-panel glass-panel"
+        @click.stop
+      >
+        <span class="side-label">目录导航</span>
+        <button
+          v-for="h in headings"
+          :key="`${h.id}-mobile`"
+          class="toc-item"
+          :class="[`toc-level-${h.level}`, { active: activeId === h.id }]"
+          @click="scrollToHeading(h.id); tocOpen = false"
+        >
+          <span class="toc-dot" />
+          <span class="toc-text">{{ h.text }}</span>
+        </button>
+      </nav>
+    </div>
+
+    <section
+      v-if="relatedArticles.length"
+      class="section-card related-section"
+    >
       <div class="section-header compact-header">
         <div>
           <span class="eyebrow">Related Reads</span>
@@ -53,10 +224,21 @@
         </div>
       </div>
       <div class="related-grid">
-        <button class="related-card glass-panel card-hover" v-for="item in relatedArticles" :key="item.id" @click="goToArticle(item.id)">
-          <div class="related-cover" :style="{ background: getCoverGradient(item) }"></div>
+        <button
+          v-for="item in relatedArticles"
+          :key="item.id"
+          class="related-card glass-panel card-hover"
+          @click="goToArticle(item.id)"
+        >
+          <div
+            class="related-cover"
+            :style="{ background: getCoverGradient(item) }"
+          />
           <div class="related-body">
-            <span class="tag-pill tag-sm" :class="getTagClass(item.tags[0])">{{ item.tags[0] }}</span>
+            <span
+              class="tag-pill tag-sm"
+              :class="getTagClass(item.tags[0])"
+            >{{ item.tags[0] }}</span>
             <h3>{{ item.title }}</h3>
             <p>{{ item.summary }}</p>
           </div>
@@ -65,7 +247,10 @@
     </section>
   </div>
 
-  <div v-else class="page-shell">
+  <div
+    v-else
+    class="page-shell"
+  >
     <div class="section-card empty-state">
       文章不存在或已被移除。
     </div>
@@ -78,12 +263,18 @@ import { useRoute, useRouter } from 'vue-router'
 import articles from '../mock/articles'
 import { formatFullDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, revealOnScroll, useGsapContext } from '../composables/useMotion'
+import { useToc } from '../composables/useToc'
 
 const detailRef = ref(null)
 const route = useRoute()
 const router = useRouter()
+const tocOpen = ref(false)
 
 const article = articles.find((item) => item.id === Number(route.params.id))
+
+const { headings, activeId, scrollToHeading, initObserver, disconnectObserver } = useToc(
+  () => (article ? article.content : '')
+)
 
 const renderedContent = computed(() => {
   if (!article) return ''
@@ -94,9 +285,14 @@ const renderedContent = computed(() => {
     return `<div class="code-block"><div class="code-block-header">${label}</div><pre><code>${escapeHtml(code.trim())}</code></pre></div>`
   })
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>')
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>')
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>')
+
+  // 为标题注入 TOC id（单次遍历保持文档顺序）
+  let idx = 0
+  html = html.replace(/^(#{1,3}) (.+)$/gm, (_, hashes, text) => {
+    const level = hashes.length
+    return `<h${level} id="toc-${idx++}">${text}</h${level}>`
+  })
+
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   html = html.replace(/^- (.+)$/gm, '<li>$1</li>')
   html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
@@ -129,10 +325,13 @@ let detachHover = () => {}
 
 onMounted(() => {
   detachHover = attachHoverLift(detailRef.value?.querySelectorAll('.card-hover'))
+  // 等 DOM 渲染完成后初始化观察器
+  requestAnimationFrame(() => initObserver())
 })
 
 onUnmounted(() => {
   detachHover()
+  disconnectObserver()
 })
 
 useGsapContext(() => {
@@ -215,6 +414,147 @@ useGsapContext(() => {
 
 .side-block p {
   color: var(--text-muted);
+}
+
+/* ===== TOC 样式 ===== */
+.toc-panel {
+  margin-bottom: 4px;
+}
+
+.toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.4;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.toc-item:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.toc-item.active {
+  color: var(--primary);
+  background: var(--primary-soft);
+  font-weight: 700;
+}
+
+.toc-item.active .toc-dot {
+  background: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.toc-level-2 {
+  padding-left: 12px;
+}
+
+.toc-level-3 {
+  padding-left: 28px;
+}
+
+.toc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line-strong);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.toc-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toc-empty {
+  color: var(--text-subtle);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.side-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 16px 0;
+}
+
+/* ===== 移动端浮动目录按钮 ===== */
+.toc-fab {
+  display: none;
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 90;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--gradient-brand);
+  color: #fff;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 18px 40px rgba(109, 124, 255, 0.34);
+  transition: all var(--transition-base);
+}
+
+.toc-fab:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.toc-fab.open {
+  background: var(--surface-strong);
+  color: var(--text-heading);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.toc-mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 89;
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.toc-mobile-panel {
+  position: absolute;
+  bottom: 88px;
+  right: 28px;
+  width: min(340px, calc(100vw - 56px));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toc-mobile-panel .toc-item {
+  padding: 10px 14px;
 }
 
 .article-content {
@@ -351,6 +691,11 @@ useGsapContext(() => {
 
   .article-content {
     padding: 24px;
+  }
+
+  .toc-fab,
+  .toc-mobile-overlay {
+    display: flex;
   }
 }
 </style>

@@ -1,10 +1,17 @@
 <template>
-  <div class="page-shell page-stack archive-page" ref="archiveRef">
+  <div
+    ref="archiveRef"
+    class="page-shell page-stack archive-page"
+  >
     <section class="page-hero archive-hero">
       <div>
         <span class="eyebrow">Archive Timeline</span>
-        <h1 class="section-title">按时间浏览全部更新</h1>
-        <p class="section-subtitle">将文章按月份归档，方便快速查看内容演进路径与主题分布。</p>
+        <h1 class="section-title">
+          按时间浏览全部更新
+        </h1>
+        <p class="section-subtitle">
+          将文章按月份归档，方便快速查看内容演进路径与主题分布。
+        </p>
       </div>
       <div class="metric-grid archive-stats">
         <article class="metric-card">
@@ -22,13 +29,22 @@
 
     <section class="section-card">
       <div class="archive-list">
-        <div v-for="group in groupedArticles" :key="group.month" class="archive-group">
+        <div
+          v-for="group in groupedArticles"
+          :key="group.month"
+          class="archive-group"
+        >
           <div class="archive-month">
             <span class="archive-month__year">{{ group.month.split('年')[0] }}</span>
             <strong>{{ group.month }}</strong>
           </div>
           <div class="archive-items">
-            <button class="archive-item glass-panel card-hover" v-for="article in group.items" :key="article.id" @click="goToArticle(article.id)">
+            <button
+              v-for="article in group.items"
+              :key="article.id"
+              class="archive-item glass-panel card-hover"
+              @click="goToArticle(article.id)"
+            >
               <div class="archive-item__date">
                 <span>{{ formatDay(article.date) }}</span>
                 <small>{{ article.readingTime }} 分钟</small>
@@ -37,7 +53,12 @@
                 <h3>{{ article.title }}</h3>
                 <p>{{ article.summary }}</p>
                 <div class="list-inline">
-                  <span class="tag-pill tag-sm" v-for="tag in article.tags.slice(0, 3)" :key="tag" :class="getTagClass(tag)">{{ tag }}</span>
+                  <span
+                    v-for="tag in article.tags.slice(0, 3)"
+                    :key="tag"
+                    class="tag-pill tag-sm"
+                    :class="getTagClass(tag)"
+                  >{{ tag }}</span>
                 </div>
               </div>
               <div class="archive-item__meta">

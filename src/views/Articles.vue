@@ -1,10 +1,17 @@
 <template>
-  <div class="page-shell page-stack articles-page" ref="pageRef">
+  <div
+    ref="pageRef"
+    class="page-shell page-stack articles-page"
+  >
     <section class="page-hero articles-hero">
       <div class="articles-hero__copy">
         <span class="eyebrow">Article Library</span>
-        <h1 class="section-title">围绕真实项目问题组织的前端文章库</h1>
-        <p class="section-subtitle">支持标签过滤、关键词搜索与按时间排序，让内容探索路径更直接，也更适合在不同设备上快速浏览。</p>
+        <h1 class="section-title">
+          围绕真实项目问题组织的前端文章库
+        </h1>
+        <p class="section-subtitle">
+          支持标签过滤、关键词搜索与按时间排序，让内容探索路径更直接，也更适合在不同设备上快速浏览。
+        </p>
       </div>
       <div class="articles-hero__meta">
         <article class="metric-mini glass-panel">
@@ -18,19 +25,39 @@
       </div>
     </section>
 
-    <section class="section-card filters-panel" ref="filtersRef">
+    <section class="section-card filters-panel">
       <div class="filters-head">
         <div class="input-shell filter-input">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle
+              cx="11"
+              cy="11"
+              r="8"
+            />
+            <path d="m21 21-4.35-4.35" />
           </svg>
-          <input v-model="searchText" placeholder="搜索标题、摘要或标签" />
+          <input
+            v-model="searchText"
+            placeholder="搜索标题、摘要或标签"
+          >
         </div>
 
         <div class="filter-actions">
           <span class="surface-badge">{{ activeTag || '全部主题' }}</span>
-          <button class="btn-ghost" :disabled="!searchText && !activeTag" @click="clearTag">重置筛选</button>
+          <button
+            class="btn-ghost"
+            :disabled="!searchText && !activeTag"
+            @click="clearTag"
+          >
+            重置筛选
+          </button>
         </div>
       </div>
 
@@ -56,18 +83,38 @@
         <span class="surface-badge">{{ searchHint }}</span>
       </div>
 
-      <div v-if="sortedArticles.length === 0" class="empty-state">
+      <div
+        v-if="sortedArticles.length === 0"
+        class="empty-state"
+      >
         没有找到匹配内容，试试更换关键词或清空标签。
       </div>
 
-      <div v-else ref="gridRef" class="article-grid">
-        <button class="article-card glass-panel card-hover" v-for="article in sortedArticles" :key="article.id" @click="goToArticle(article.id)">
-          <div class="article-card__cover" :style="{ background: getCoverGradient(article) }">
+      <div
+        v-else
+        ref="gridRef"
+        class="article-grid"
+      >
+        <button
+          v-for="article in sortedArticles"
+          :key="article.id"
+          class="article-card glass-panel card-hover"
+          @click="goToArticle(article.id)"
+        >
+          <div
+            class="article-card__cover"
+            :style="{ background: getCoverGradient(article) }"
+          >
             <span class="surface-badge article-time">{{ article.readingTime }} 分钟</span>
           </div>
           <div class="article-card__body">
             <div class="list-inline">
-              <span class="tag-pill tag-sm" v-for="tag in article.tags" :key="tag" :class="getTagClass(tag)">{{ tag }}</span>
+              <span
+                v-for="tag in article.tags"
+                :key="tag"
+                class="tag-pill tag-sm"
+                :class="getTagClass(tag)"
+              >{{ tag }}</span>
             </div>
             <h3>{{ article.title }}</h3>
             <p>{{ article.summary }}</p>
@@ -93,7 +140,6 @@ const route = useRoute()
 const router = useRouter()
 
 const pageRef = ref(null)
-const filtersRef = ref(null)
 const gridRef = ref(null)
 
 const searchText = ref((route.query.tag || '').toString())
@@ -151,6 +197,13 @@ const toggleTag = (tag) => {
   searchText.value = tag
   syncQuery(tag)
 }
+
+watch(searchText, (val) => {
+  if (activeTag.value && val !== activeTag.value) {
+    activeTag.value = ''
+    syncQuery('')
+  }
+})
 
 const goToArticle = (id) => router.push(`/articles/${id}`)
 

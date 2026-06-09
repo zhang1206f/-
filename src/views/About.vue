@@ -1,21 +1,52 @@
 <template>
-  <div class="about" ref="aboutRef">
+  <div
+    ref="aboutRef"
+    class="about"
+  >
     <div class="profile-header glass">
       <div class="avatar-wrap">
-        <div class="avatar-glow"></div>
-        <a-avatar :size="100" class="profile-avatar">风</a-avatar>
+        <div class="avatar-glow" />
+        <a-avatar
+          :size="100"
+          class="profile-avatar"
+        >
+          风
+        </a-avatar>
       </div>
       <h1>清风</h1>
-      <p class="profile-title">前端开发者 / Vue 技术写作者</p>
+      <p class="profile-title">
+        前端开发者 / Vue 技术写作者
+      </p>
       <p class="profile-bio">
         我喜欢把复杂的前端问题拆成可复用的方案，用真实项目案例帮助你快速理解技术落地。
       </p>
       <div class="social-links">
-        <a class="social-btn" href="https://github.com" target="_blank">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        <a
+          class="social-btn"
+          href="https://github.com"
+          target="_blank"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          ><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
         </a>
-        <a class="social-btn" href="mailto:hello@qingfeng.me">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <a
+          class="social-btn"
+          href="mailto:hello@qingfeng.me"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
         </a>
       </div>
     </div>
@@ -36,27 +67,47 @@
       </div>
     </section>
 
-    <section class="section" ref="skillsRef">
+    <section
+      ref="skillsRef"
+      class="section"
+    >
       <h2>技术栈</h2>
       <div class="skills-grid">
-        <div class="skill-item glass" v-for="skill in skills" :key="skill.name">
+        <div
+          v-for="skill in skills"
+          :key="skill.name"
+          class="skill-item glass"
+        >
           <div class="skill-header">
             <span class="skill-name">{{ skill.name }}</span>
             <span class="skill-label">{{ skill.label }}</span>
           </div>
           <div class="skill-bar">
-            <div class="skill-fill" :style="{ width: skill.level + '%', background: skill.color }"></div>
+            <div
+              class="skill-fill"
+              :style="{ width: skill.level + '%', background: skill.color }"
+            />
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" ref="timelineRef">
+    <section
+      ref="timelineRef"
+      class="section"
+    >
       <h2>技术成长时间线</h2>
       <div class="tl-list">
-        <div class="tl-entry" v-for="(item, idx) in timeline" :key="idx">
-          <div class="tl-line" :class="`line-${idx % 5}`">
-            <div class="tl-node"></div>
+        <div
+          v-for="(item, idx) in timeline"
+          :key="idx"
+          class="tl-entry"
+        >
+          <div
+            class="tl-line"
+            :class="`line-${idx % 5}`"
+          >
+            <div class="tl-node" />
           </div>
           <div class="tl-content glass">
             <div class="tl-header">
@@ -69,14 +120,25 @@
       </div>
     </section>
 
-    <section class="section" ref="projectsRef">
+    <section
+      ref="projectsRef"
+      class="section"
+    >
       <h2>个人项目</h2>
       <div class="projects-grid">
-        <div class="project-card glass" v-for="proj in projects" :key="proj.name">
+        <div
+          v-for="proj in projects"
+          :key="proj.name"
+          class="project-card glass"
+        >
           <h3>{{ proj.name }}</h3>
           <p>{{ proj.desc }}</p>
           <div class="proj-tags">
-            <span class="tag-pill tag-sm" v-for="t in proj.tags" :key="t">{{ t }}</span>
+            <span
+              v-for="t in proj.tags"
+              :key="t"
+              class="tag-pill tag-sm"
+            >{{ t }}</span>
           </div>
         </div>
       </div>
@@ -85,38 +147,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import gsap from 'gsap'
-import ScrollTrigger from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import { ref } from 'vue'
+import { animateIn, revealOnScroll, useGsapContext } from '../composables/useMotion'
 
 const aboutRef = ref(null)
 const skillsRef = ref(null)
 const timelineRef = ref(null)
 const projectsRef = ref(null)
-let ctx = null
 
-onMounted(() => {
-  ctx = gsap.context(() => {
-    gsap.from(aboutRef.value?.querySelector('.profile-header'), { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' })
-    gsap.from(aboutRef.value?.querySelector('.profile-grid'), { opacity: 0, y: 20, duration: 0.6, delay: 0.2, ease: 'power3.out' })
-    gsap.from(skillsRef.value?.querySelectorAll('.skill-item'), {
-      scrollTrigger: { trigger: skillsRef.value, start: 'top 85%' },
-      opacity: 0, x: -20, stagger: 0.08, duration: 0.5, ease: 'power2.out'
-    })
-    gsap.from(timelineRef.value?.querySelectorAll('.tl-entry'), {
-      scrollTrigger: { trigger: timelineRef.value, start: 'top 85%' },
-      opacity: 0, x: -20, stagger: 0.12, duration: 0.5, ease: 'power2.out'
-    })
-    gsap.from(projectsRef.value?.querySelectorAll('.project-card'), {
-      scrollTrigger: { trigger: projectsRef.value, start: 'top 85%' },
-      opacity: 0, y: 20, stagger: 0.1, duration: 0.5, ease: 'power2.out'
-    })
-  })
+useGsapContext(() => {
+  animateIn(aboutRef.value?.querySelectorAll('.profile-header, .profile-grid'), { stagger: 0.12 })
+  revealOnScroll(skillsRef.value?.querySelectorAll('.skill-item'), { trigger: skillsRef.value })
+  revealOnScroll(timelineRef.value?.querySelectorAll('.tl-entry'), { trigger: timelineRef.value })
+  revealOnScroll(projectsRef.value?.querySelectorAll('.project-card'), { trigger: projectsRef.value })
 })
-
-onUnmounted(() => { ctx?.revert() })
 
 const skills = [
   { name: 'JavaScript', level: 88, color: '#eab308', label: '熟练' },
@@ -152,6 +196,7 @@ const projects = [
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 24px;
+  color: var(--text-heading);
 }
 
 .profile-header {
@@ -167,13 +212,13 @@ const projects = [
   position: absolute;
   inset: -20px;
   border-radius: 50%;
-  background: var(--accent-gradient);
+  background: var(--gradient-brand);
   opacity: 0.15;
   filter: blur(20px);
 }
 
 .profile-avatar {
-  background: var(--accent-gradient) !important;
+  background: var(--gradient-brand) !important;
   font-size: 36px !important;
   font-weight: 700;
   position: relative;
@@ -186,10 +231,10 @@ const projects = [
   margin-bottom: 8px;
 }
 
-.profile-title { color: var(--text-secondary); font-size: 16px; margin-bottom: 16px; }
+.profile-title { color: var(--text-muted); font-size: 16px; margin-bottom: 16px; }
 
 .profile-bio {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 15px;
   line-height: 1.8;
   max-width: 560px;
@@ -205,9 +250,9 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-alt);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  border: 1px solid var(--line);
   transition: all 0.2s ease;
 }
 
@@ -221,14 +266,14 @@ const projects = [
 
 .profile-card {
   padding: 24px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 
-.profile-card h3 { font-size: 18px; margin-bottom: 14px; }
+.profile-card h3 { font-size: 18px; margin-bottom: 14px; color: var(--text-heading); }
 
 .profile-card p,
 .profile-card li {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   line-height: 1.8;
   font-size: 14px;
 }
@@ -243,7 +288,7 @@ const projects = [
   gap: 16px;
 }
 
-.skill-item { padding: 20px; border-radius: var(--radius); }
+.skill-item { padding: 20px; border-radius: var(--radius-md); }
 
 .skill-header {
   display: flex;
@@ -252,13 +297,13 @@ const projects = [
   margin-bottom: 10px;
 }
 
-.skill-name { font-weight: 600; font-size: 15px; color: var(--text-h); }
-.skill-label { font-size: 12px; color: var(--text-secondary); }
+.skill-name { font-weight: 600; font-size: 15px; color: var(--text-heading); }
+.skill-label { font-size: 12px; color: var(--text-muted); }
 
 .skill-bar {
   height: 6px;
   border-radius: 999px;
-  background: var(--bg-alt);
+  background: var(--bg-muted);
   overflow: hidden;
 }
 
@@ -279,7 +324,7 @@ const projects = [
 .tl-line {
   position: relative;
   width: 2px;
-  background: var(--border);
+  background: var(--line);
   flex-shrink: 0;
   display: flex;
   justify-content: center;
@@ -305,7 +350,7 @@ const projects = [
 .tl-content {
   flex: 1;
   padding: 20px 22px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 
 .tl-header {
@@ -315,20 +360,20 @@ const projects = [
   margin-bottom: 8px;
 }
 
-.tl-header strong { font-size: 17px; color: var(--text-h); }
+.tl-header strong { font-size: 17px; color: var(--text-heading); }
 
 .tl-tag {
   font-size: 12px;
   padding: 2px 10px;
   border-radius: 999px;
-  background: rgba(37,99,235,0.1);
+  background: var(--primary-soft);
   color: var(--primary);
   font-weight: 500;
 }
 
 .tl-content p {
   margin: 0;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.75;
 }
@@ -341,19 +386,19 @@ const projects = [
 
 .project-card {
   padding: 24px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   transition: all 0.25s ease;
 }
 
 .project-card:hover {
   transform: translateY(-4px);
-  border-color: var(--border-active);
+  border-color: var(--line-strong);
 }
 
-.project-card h3 { font-size: 17px; margin-bottom: 12px; }
+.project-card h3 { font-size: 17px; margin-bottom: 12px; color: var(--text-heading); }
 
 .project-card p {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.7;
   margin-bottom: 16px;
