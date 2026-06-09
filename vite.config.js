@@ -22,18 +22,24 @@ export default defineConfig({
           if (id.includes('gsap')) {
             return 'gsap'
           }
+          if (id.includes('@vercel/speed-insights')) {
+            return 'vercel-insights'
+          }
         },
         assetFileNames: 'assets/[name].[hash:8][extname]',
         chunkFileNames: 'assets/[name].[hash:8].js',
         entryFileNames: 'assets/[name].[hash:8].js'
       }
     },
-    minify: true,
+    minify: 'terser',
     cssCodeSplit: true,
-    sourcemap: false
+    sourcemap: false,
+    chunkSizeWarningLimit: 800,
+    assetsInlineLimit: 4096,
+    outDir: 'dist'
   },
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'gsap', 'dayjs'],
+    include: ['vue', 'vue-router', 'gsap'],
     exclude: ['echarts']
   }
 })

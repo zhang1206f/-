@@ -7,6 +7,19 @@
   ],
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {
@@ -14,6 +27,25 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/(index.html|favicon.svg|icons.svg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*.{js,ts}": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
+  "experimental": {
+    "turboMode": true,
+    "edgeRuntime": "edge"
+  }
 }

@@ -1,18 +1,21 @@
 <template>
   <a-config-provider :theme="antdTheme">
-    <Layout />
+    <SkeletonScreen v-if="isLoading" />
+    <Layout v-else />
     <SpeedInsights />
   </a-config-provider>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { theme as antdThemeEngine } from 'ant-design-vue'
 import { SpeedInsights } from '@vercel/speed-insights/vue'
 import Layout from './components/Layout.vue'
+import SkeletonScreen from './components/SkeletonScreen.vue'
 import { useTheme } from './composables/useTheme'
 
 const { isDark } = useTheme()
+const isLoading = ref(true)
 
 const antdTheme = computed(() => ({
   algorithm: isDark.value ? antdThemeEngine.darkAlgorithm : antdThemeEngine.defaultAlgorithm,
@@ -25,4 +28,10 @@ const antdTheme = computed(() => ({
       : '0 24px 80px rgba(15, 23, 42, 0.14)'
   }
 }))
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 500)
+})
 </script>
