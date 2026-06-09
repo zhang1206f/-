@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "ant-design-vue": "^4.2.6",
     "echarts": "^6.1.0",
     "gsap": "^3.15.0",

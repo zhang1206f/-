@@ -1,12 +1,14 @@
 <template>
   <a-config-provider :theme="antdTheme">
     <Layout />
+    <SpeedInsights />
   </a-config-provider>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { theme as antdThemeEngine } from 'ant-design-vue'
+import { SpeedInsights } from '@vercel/speed-insights/vue'
 import Layout from './components/Layout.vue'
 import { useTheme } from './composables/useTheme'
 
