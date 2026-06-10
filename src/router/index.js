@@ -38,6 +38,24 @@ const routes = [
     meta: { title: '监控', preload: false }
   },
   {
+    path: '/editor/new',
+    name: 'EditorNew',
+    component: () => import('../views/Editor.vue'),
+    meta: { title: '新建文章' }
+  },
+  {
+    path: '/editor/:id',
+    name: 'EditorEdit',
+    component: () => import('../views/Editor.vue'),
+    meta: { title: '编辑文章' }
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('../views/Admin.vue'),
+    meta: { title: '管理后台', preload: false }
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue'),

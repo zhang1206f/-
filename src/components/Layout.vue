@@ -184,6 +184,7 @@ const menuItems = [
   { path: '/archive', label: '归档', desc: '按时间线查看更新记录' },
   { path: '/tools', label: '小工具', desc: '交互式效率与趣味工具' },
   { path: '/monitor', label: '监控', desc: '实时资源与网络监控' },
+  { path: '/admin', label: '管理', desc: '文章与知识库管理' },
   { path: '/about', label: '关于', desc: '作者简介与能力画像' }
 ]
 

@@ -129,12 +129,19 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import articles from '../mock/articles'
+import { useArticlesStore } from '../stores/articles'
 import { formatFullDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, gsap, revealOnScroll, useGsapContext } from '../composables/useMotion'
 
 const route = useRoute()
 const router = useRouter()
+const articlesStore = useArticlesStore()
+
+const articles = computed(() => {
+  const list = articlesStore.articles
+  if (!Array.isArray(list)) return []
+  return list.filter(a => a.status === 'published')
+})
 
 const pageRef = ref(null)
 const gridRef = ref(null)
@@ -144,12 +151,13 @@ const activeTag = ref((route.query.tag || '').toString())
 
 const allTags = computed(() => {
   const set = new Set()
-  articles.forEach((article) => article.tags.forEach((tag) => set.add(tag)))
+  const list = articles.value || []
+  list.forEach((article) => article.tags.forEach((tag) => set.add(tag)))
   return [...set]
 })
 
 const filteredArticles = computed(() => {
-  let result = articles
+  let result = articles.value || []
 
   // Tag filter
   if (activeTag.value) {

@@ -103,7 +103,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import articles from '../mock/articles'
+import { useArticlesStore } from '../stores/articles'
 import { getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, revealOnScroll, useGsapContext } from '../composables/useMotion'
 
@@ -111,10 +111,18 @@ const archiveRef = ref(null)
 const router = useRouter()
 const activeYear = ref(null)
 const groupRefs = ref({})
+const articlesStore = useArticlesStore()
+
+const articles = computed(() => {
+  const list = articlesStore.articles
+  if (!Array.isArray(list)) return []
+  return list.filter(a => a.status === 'published')
+})
 
 const groupedArticles = computed(() => {
   const groups = {}
-  const sorted = [...articles].sort((a, b) => new Date(b.date) - new Date(a.date))
+  const list = articles.value || []
+  const sorted = [...list].sort((a, b) => new Date(b.date) - new Date(a.date))
   sorted.forEach((article) => {
     const date = new Date(article.date)
     const year = date.getFullYear()
@@ -127,7 +135,8 @@ const groupedArticles = computed(() => {
 
 const years = computed(() => {
   const set = new Set()
-  articles.forEach((article) => set.add(new Date(article.date).getFullYear()))
+  const list = articles.value || []
+  list.forEach((article) => set.add(new Date(article.date).getFullYear()))
   return [...set].sort((a, b) => b - a)
 })
 

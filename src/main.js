@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import { ConfigProvider, Avatar, InputNumber, Switch } from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
 import './style.css'
@@ -7,6 +8,7 @@ import router from './router'
 import { lazyLoad } from './directives/lazyLoad'
 
 const app = createApp(App)
+app.use(createPinia())
 app.use(ConfigProvider)
 app.use(Avatar)
 app.use(InputNumber)

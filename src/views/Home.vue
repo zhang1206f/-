@@ -275,11 +275,20 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import articles from '../mock/articles'
+import { useArticlesStore } from '../stores/articles'
 import { formatShortDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, attachMagneticButtons, gsap, useGsapContext } from '../composables/useMotion'
 
 const router = useRouter()
+const articlesStore = useArticlesStore()
+
+const articles = computed(() => {
+  const list = articlesStore.articles
+  if (!Array.isArray(list)) return []
+  return list
+    .filter(a => a.status === 'published')
+    .sort((a, b) => (b.sortOrder || 0) - (a.sortOrder || 0) || b.date.localeCompare(a.date))
+})
 
 const pageRef = ref(null)
 const heroRef = ref(null)
@@ -290,25 +299,29 @@ const activeTag = ref('')
 
 // 统计数据
 const totalViews = computed(() => {
-  return articles.reduce((sum, article) => sum + article.views, 0)
+  const list = articles.value || []
+  return list.reduce((sum, article) => sum + article.views, 0)
 })
 
 const allTags = computed(() => {
   const set = new Set()
-  articles.forEach(article => article.tags.forEach(tag => set.add(tag)))
+  const list = articles.value || []
+  list.forEach(article => article.tags.forEach(tag => set.add(tag)))
   return [...set]
 })
 
 const avgReadingTime = computed(() => {
-  if (articles.length === 0) return 0
-  const total = articles.reduce((sum, article) => sum + article.readingTime, 0)
-  return Math.round(total / articles.length)
+  const list = articles.value || []
+  if (list.length === 0) return 0
+  const total = list.reduce((sum, article) => sum + article.readingTime, 0)
+  return Math.round(total / list.length)
 })
 
 // 热门标签
 const popularTags = computed(() => {
   const tagCounts = {}
-  articles.forEach(article => {
+  const list = articles.value || []
+  list.forEach(article => {
     article.tags.forEach(tag => {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1
     })
@@ -328,14 +341,16 @@ const toggleTag = (tag) => {
 }
 
 // 精选文章：按阅读量排序取前2篇
-const featuredArticles = computed(() =>
-  [...articles].sort((a, b) => b.views - a.views).slice(0, 2)
-)
+const featuredArticles = computed(() => {
+  const list = articles.value || []
+  return [...list].sort((a, b) => b.views - a.views).slice(0, 2)
+})
 
 // 最新文章：按日期排序取前3篇
-const latestArticles = computed(() =>
-  [...articles].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
-)
+const latestArticles = computed(() => {
+  const list = articles.value || []
+  return [...list].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
+})
 
 const goArticles = () => router.push('/articles')
 const goAbout = () => router.push('/about')

@@ -260,7 +260,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import articles from '../mock/articles'
+import { useArticlesStore } from '../stores/articles'
 import { formatFullDate, getCoverGradient, getTagClass } from '../composables/useArticleMeta'
 import { animateIn, attachHoverLift, revealOnScroll, useGsapContext } from '../composables/useMotion'
 import { useToc } from '../composables/useToc'
@@ -272,8 +272,14 @@ const detailRef = ref(null)
 const route = useRoute()
 const router = useRouter()
 const tocOpen = ref(false)
+const articlesStore = useArticlesStore()
 
-const article = computed(() => articles.find((item) => item.id === Number(route.params.id)))
+const articles = computed(() => {
+  const list = articlesStore.articles
+  return Array.isArray(list) ? list : []
+})
+
+const article = computed(() => articles.value.find((item) => item.id === Number(route.params.id)))
 
 const renderedContent = computed(() => {
   if (!article.value) return ''

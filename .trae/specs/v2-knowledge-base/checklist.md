@@ -1,0 +1,36 @@
+# Checklist
+
+- [x] Pinia 已安装并正确注册，应用可通过 store 管理文章和分类数据
+- [x] 文章 store 提供完整的 CRUD 操作（getArticleById、addArticle、updateArticle、deleteArticle）
+- [x] 分类 store 提供完整的 CRUD 操作（getCategories、addCategory、updateCategory、deleteCategory）
+- [x] 首次加载时从 localStorage 读取数据，无数据时使用 mock 数据初始化
+- [x] 每次数据变更后自动持久化到 localStorage
+- [x] 现有 5 篇文章已补充 category、status、updatedAt、sortOrder 等新字段
+- [x] 文章编辑器页面可正常打开（新建模式和编辑模式）
+- [x] 编辑器支持 Markdown 实时预览（左右分栏布局）
+- [x] 编辑器表单包含标题、摘要、分类、标签、封面色字段
+- [x] "保存草稿"按钮将文章以 draft 状态保存
+- [x] "发布"按钮将文章以 published 状态保存
+- [x] 编辑已有文章时正确预填充所有字段
+- [x] 管理后台页面展示所有文章列表，含状态标签
+- [x] 管理后台支持按状态筛选（全部/草稿/已发布/已归档）
+- [x] 管理后台的编辑按钮正确跳转到编辑器并加载对应文章
+- [x] 删除文章带确认弹窗，确认后从 store 和 localStorage 中移除
+- [x] 快速状态切换功能正常工作
+- [x] "新建文章"按钮跳转到编辑器新建模式
+- [x] 分类管理支持新增、编辑、删除分类操作
+- [x] 分类列表展示名称、图标和关联文章数量
+- [x] 文章编辑器的分类下拉正确展示分类列表
+- [x] 新路由（`/editor/new`、`/editor/:id`、`/admin`）正确配置且懒加载
+- [x] 导航栏包含"管理后台"入口链接
+- [x] Home.vue 从 store 获取文章，仅展示已发布文章
+- [x] Articles.vue 从 store 获取文章，支持按分类筛选
+- [x] ArticleDetail.vue 从 store 根据 id 获取文章
+- [x] Archive.vue 从 store 获取文章
+- [x] 首页统计面板数据来自 store，文章数仅统计已发布
+- [ ] "导出数据"按钮能下载 JSON 文件，包含所有文章和分类数据
+- [x] "导入数据"能上传 JSON 文件并合并到 store，提示导入结果
+- [x] 新页面视觉风格与现有设计系统（CSS 变量）一致
+- [x] 新页面支持亮色/暗色主题切换
+- [x] 新页面响应式适配在 1080px/768px/640px 断点下正常
+- [x] 新页面包含 GSAP 入场动画
